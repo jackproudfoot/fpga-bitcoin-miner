@@ -1,0 +1,24 @@
+{
+  "name": "fpga-bitcoin-miner",
+  "version": "1.0.0",
+  "description": "FPGA Miner for ECE350 final project",
+  "main": "client.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jackproudfoot/fpga-bitcoin-miner.git"
+  },
+  "author": "Jack Proudfoot and Matthew Belissary",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jackproudfoot/fpga-bitcoin-miner/issues"
+  },
+  "homepage": "https://github.com/jackproudfoot/fpga-bitcoin-miner#readme",
+  "dependencies": {
+    "crytpo-js": "0.0.1-security",
+    "merkletreejs": "^0.2.9",
+    "stratum-client": "^1.1.0"
+  }
+}
