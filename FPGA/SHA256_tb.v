@@ -15,7 +15,7 @@ module SHA256_tb();
 		originalValue = 88'b0110100001100101011011000110110001101111001000000111011101101111011100100110110001100100;
 
 		// // time delay (ns)
-		#60
+		#50
 
 		// End testbench
 		$finish;
@@ -24,7 +24,7 @@ module SHA256_tb();
 	// Input Manipulation
 	// Toggle clock every 2s0 ns
 	always begin
-		#20 clock = ~clock;
+		#40 clock = ~clock;
 		hashValReg <= hashedValue;
 		$display("hash: %h", algor.hashedValue);
 	end
