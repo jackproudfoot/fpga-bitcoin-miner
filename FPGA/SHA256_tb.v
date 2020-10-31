@@ -1,18 +1,25 @@
 `timescale 1 ns / 100 ps
 module SHA256_tb();
 	reg clock;
-	reg [87:0] originalValue;
+	wire [63:0] length;
+	reg [447:0] originalValue;
 	reg [255:0] hashValReg;
 	wire [255:0] hashedValue;
 
 	// Module to test
-	SHA256 algor(originalValue, hashedValue, clock);
+	SHA256 algor(originalValue, length, hashedValue, clock);
+
+	wire [87:0] data;
+	assign data [87:0] = 88'b0110100001100101011011000110110001101111001000000111011101101111011100100110110001100100;
+
+	assign length = {56'b0, 8'b01011000};
 
 	// Give inputs and runtime
 	initial begin
 		// Initialize inputs to 0
 		clock = 0;
-		originalValue = 88'b0110100001100101011011000110110001101111001000000111011101101111011100100110110001100100;
+
+		originalValue = {data, 1'b1, 359'b0};
 
 		// // time delay (ns)
 		#50

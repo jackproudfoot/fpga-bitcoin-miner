@@ -1,30 +1,15 @@
-module SHA256(originalValue, hashedValue, clock);
-	// input [639:0] originalValue;
-	// output [255:0] hashedValue;
+module SHA256(originalValue, length, hashedValue, clock);
 
 	input clock;
-	input [87:0] originalValue;
+	input [447:0] originalValue;
+	input [63:0] length;
 	output [255:0] hashedValue;
 
 	wire [31:0] hash0, hash1, hash2, hash3, hash4, hash5, hash6, hash7;
-	// wire [31:0] k0, k1, k2, k3, k4, k5, k6, k7, k8, k9, k10, k11, k12, k13, k14, k15, k16, k17, k18, k19, k20, k21, k22, k23, k24, k25, k26, k27, k28, k29, k30, k31;
 
 	// 64-element arrays of 32-bit wide reg
 	wire [31:0] k [0:63];
 	wire [31:0] w [0:63];
-
-	// wire [31:0] s0, s1, s2, s3, s4, s5, s6, s7, s8, 
-	// 			s9, s10, s11, s12, s13, s14, s15, s16, 
-	// 			s17, s18, s19, s20, s21, s22, s23, s24, 
-	// 			s25, s26, s27, s28, s29, s30, s31, s32, 
-	// 			s33, s34, s35, s36, s37, s38, s39, s40, 
-	// 			s41, s42, s43, s44, s45, s46, s47, s48, 
-	// 			s49, s50, s51, s52, s53, s54, s55, s56, 
-	// 			s57, s58, s59, s60, s61, s62, s63, s64, 
-	// 			s65, s66, s67, s68, s69, s70, s71, s72, 
-	// 			s73, s74, s75, s76, s77, s78, s79, s80, 
-	// 			s81, s82, s83, s84, s85, s86, s87, s88, 
-	// 			s89, s90, s91, s92, s93, s94, s95;
 
 	wire [31:0] rot7_16, rot7_17, rot7_18, rot7_19, rot7_20, rot7_21, rot7_22, rot7_23, 
 				rot7_24, rot7_25, rot7_26, rot7_27, rot7_28, rot7_29, rot7_30, rot7_31, 
@@ -67,16 +52,6 @@ module SHA256(originalValue, hashedValue, clock);
 				shift10_40, shift10_41, shift10_42, shift10_43, shift10_44, shift10_45, shift10_46, shift10_47, 
 				shift10_48, shift10_49, shift10_50, shift10_51, shift10_52, shift10_53, shift10_54, shift10_55, 
 				shift10_56, shift10_57, shift10_58, shift10_59, shift10_60, shift10_61, shift10_62, shift10_63;
-
-
-	wire [31:0] S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16,
-				S17, S18, S19, S20, S21, S22, S23, S24, S25, S26, S27, S28, S29, S30, S31, S32,
-				S33, S34, S35, S36, S37, S38, S39, S40, S41, S42, S43, S44, S45, S46, S47, S48,
-				S49, S50, S51, S52, S53, S54, S55, S56, S57, S58, S59, S60, S61, S62, S63, S64,
-				S65, S66, S67, S68, S69, S70, S71, S72, S73, S74, S75, S76, S77, S78, S79, S80,
-				S81, S82, S83, S84, S85, S86, S87, S88, S89, S90, S91, S92, S93, S94, S95, S96,
-				S97, S98, S99, S100, S101, S102, S103, S104, S105, S106, S107, S108, S109, S110, S111, S112,
-				S113, S114, S115, S116, S117, S118, S119, S120, S121, S122, S123, S124, S125, S126, S127;
 
 	wire [31:0] ch0, ch1, ch2, ch3, ch4, ch5, ch6, ch7, ch8, ch9, ch10, ch11,
 				ch12, ch13, ch14, ch15, ch16, ch17, ch18, ch19, ch20, ch21, 
@@ -152,23 +127,6 @@ module SHA256(originalValue, hashedValue, clock);
 				a63, b63, c63, d63, e63, f63, g63, h63,
 				a64, b64, c64, d64, e64, f64, g64, h64;
 
-	wire [31:0] temp0, temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8,
-				temp9, temp10, temp11, temp12, temp13, temp14, temp15, temp16,
-				temp17, temp18, temp19, temp20, temp21, temp22, temp23, temp24,
-				temp25, temp26, temp27, temp28, temp29, temp30, temp31, temp32,
-				temp33, temp34, temp35, temp36, temp37, temp38, temp39, temp40,
-				temp41, temp42, temp43, temp44, temp45, temp46, temp47, temp48,
-				temp49, temp50, temp51, temp52, temp53, temp54, temp55, temp56,
-				temp57, temp58, temp59, temp60, temp61, temp62, temp63, temp64,
-				temp65, temp66, temp67, temp68, temp69, temp70, temp71, temp72,
-				temp73, temp74, temp75, temp76, temp77, temp78, temp79, temp80,
-				temp81, temp82, temp83, temp84, temp85, temp86, temp87, temp88,
-				temp89, temp90, temp91, temp92, temp93, temp94, temp95, temp96,
-				temp97, temp98, temp99, temp100, temp101, temp102, temp103, temp104,
-				temp105, temp106, temp107, temp108, temp109, temp110, temp111, temp112,
-				temp113, temp114, temp115, temp116, temp117, temp118, temp119, temp120,
-				temp121, temp122, temp123, temp124, temp125, temp126, temp127;
-
 
 	wire [31:0] maj0, maj1, maj2, maj3, maj4, maj5, maj6, maj7, maj8,
 				maj9, maj10, maj11, maj12, maj13, maj14, maj15, maj16,
@@ -236,8 +194,6 @@ module SHA256(originalValue, hashedValue, clock);
 
 	wire [31:0] hashFinal0, hashFinal1, hashFinal2, hashFinal3, hashFinal4, hashFinal5, hashFinal6, hashFinal7;
 
-	wire [88:0] inPlusOne;
-	wire [447:0] paddedInput;
 	wire [511:0] inputSchedule;
 
 	// assign (h)ash values
@@ -318,10 +274,8 @@ module SHA256(originalValue, hashedValue, clock);
 	assign k[62] = 32'b10111110111110011010001111110111;
 	assign k[63] = 32'b11000110011100010111100011110010;
 
-	// Pad Inital Input
-
-	assign paddedInput = {originalValue, 1'b1, 359'b0};
-	assign inputSchedule = {paddedInput, 56'b0, 8'b01011000};
+	// Pad input
+	assign inputSchedule = {originalValue, length};
 
 
 	// message schedule (w)
