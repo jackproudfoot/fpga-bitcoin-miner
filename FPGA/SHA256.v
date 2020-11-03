@@ -1,11 +1,14 @@
-module SHA256(originalValue, length, hashedValue, clock);
+module SHA256(originalValue, length, hashedValue, clock, 
+			  hash0In, hash1In, hash2In, hash3In, hash4In, hash5In, hash6In, hash7In, 
+			  hash0Out, hash1Out, hash2Out, hash3Out, hash4Out, hash5Out, hash6Out, hash7Out);
 
 	input clock;
+	input [31:0] hash0In, hash1In, hash2In, hash3In, hash4In, hash5In, hash6In, hash7In;
 	input [447:0] originalValue;
 	input [63:0] length;
+	output [31:0] hash0Out, hash1Out, hash2Out, hash3Out, hash4Out, hash5Out, hash6Out, hash7Out;
 	output [255:0] hashedValue;
 
-	wire [31:0] hash0, hash1, hash2, hash3, hash4, hash5, hash6, hash7;
 
 	// 64-element arrays of 32-bit wide reg
 	wire [31:0] k [0:63];
@@ -196,16 +199,16 @@ module SHA256(originalValue, length, hashedValue, clock);
 
 	wire [511:0] inputSchedule;
 
-	// assign (h)ash values
+	// // assign (h)ash values
 
-	assign hash0 = 32'b01101010000010011110011001100111;
-	assign hash1 = 32'b10111011011001111010111010000101;
-	assign hash2 = 32'b00111100011011101111001101110010;
-	assign hash3 = 32'b10100101010011111111010100111010;
-	assign hash4 = 32'b01010001000011100101001001111111;
-	assign hash5 = 32'b10011011000001010110100010001100;
-	assign hash6 = 32'b00011111100000111101100110101011;
-	assign hash7 = 32'b01011011111000001100110100011001;
+	// assign hash0 = 32'b01101010000010011110011001100111;
+	// assign hash1 = 32'b10111011011001111010111010000101;
+	// assign hash2 = 32'b00111100011011101111001101110010;
+	// assign hash3 = 32'b10100101010011111111010100111010;
+	// assign hash4 = 32'b01010001000011100101001001111111;
+	// assign hash5 = 32'b10011011000001010110100010001100;
+	// assign hash6 = 32'b00011111100000111101100110101011;
+	// assign hash7 = 32'b01011011111000001100110100011001;
 
 	// Assign (k)onstants
 
@@ -1020,14 +1023,14 @@ module SHA256(originalValue, length, hashedValue, clock);
 
 	// Compression
 
-	assign a0 = hash0;
-	assign b0 = hash1;
-	assign c0 = hash2;
-	assign d0 = hash3;
-	assign e0 = hash4;
-	assign f0 = hash5;
-	assign g0 = hash6;
-	assign h0 = hash7;
+	assign a0 = hash0In;
+	assign b0 = hash1In;
+	assign c0 = hash2In;
+	assign d0 = hash3In;
+	assign e0 = hash4In;
+	assign f0 = hash5In;
+	assign g0 = hash6In;
+	assign h0 = hash7In;
 
 	// // Compress block 0
 
@@ -3045,7 +3048,14 @@ module SHA256(originalValue, length, hashedValue, clock);
 	assign b64 = a63;
 	assign a64 = temp1_63 + temp2_63;
     
-    
+    assign hash0Out = a64;
+    assign hash1Out = b64;
+    assign hash2Out = c64;
+    assign hash3Out = d64;
+    assign hash4Out = e64;
+    assign hash5Out = f64;
+    assign hash6Out = g64;
+    assign hash7Out = h64;
     
 
 
