@@ -1,5 +1,5 @@
 *
 !.gitignore
-!.v
-!.txt
+!*.v
 !Makefile
+

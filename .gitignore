@@ -1,5 +1,8 @@
 .DS_Store
 
+# Verilog files
+.v
+
 # Logs
 logs
 *.log
