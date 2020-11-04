@@ -3057,16 +3057,14 @@ module SHA256(originalValue, length, hashedValue, clock,
     assign hash6Out = g64;
     assign hash7Out = h64;
     
-
-
-	assign hashFinal0 = hash0 + a64;
-	assign hashFinal1 = hash1 + b64;
-	assign hashFinal2 = hash2 + c64;
-	assign hashFinal3 = hash3 + d64;
-	assign hashFinal4 = hash4 + e64;
-	assign hashFinal5 = hash5 + f64;
-	assign hashFinal6 = hash6 + g64;
-	assign hashFinal7 = hash7 + h64;
+	assign hashFinal0 = hash0In + a64;
+	assign hashFinal1 = hash1In + b64;
+	assign hashFinal2 = hash2In + c64;
+	assign hashFinal3 = hash3In + d64;
+	assign hashFinal4 = hash4In + e64;
+	assign hashFinal5 = hash5In + f64;
+	assign hashFinal6 = hash6In + g64;
+	assign hashFinal7 = hash7In + h64;
 
 	assign hashedValue = {hashFinal0, hashFinal1, hashFinal2, hashFinal3, hashFinal4, hashFinal5, hashFinal6, hashFinal7};
 endmodule

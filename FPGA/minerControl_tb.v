@@ -1,46 +1,34 @@
 `timescale 1 ns / 100 ps
 module minerControl_tb();
 	//NOT DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	reg clock;
-	wire [63:0] length;
-	reg [447:0] originalValue;
-	reg [255:0] hashValReg;
-	wire [255:0] hashedValue;
+	reg clock = 1;
+	reg [639:0] blockHeader;
+	wire [255:0] satisfactoryHash;
 
 	// Module to test
-	SHA256 algor(originalValue, length, hashedValue, clock);
-
-	wire [87:0] data;
-	assign data [87:0] = 88'b0110100001100101011011000110110001101111001000000111011101101111011100100110110001100100;
-
-	assign length = {56'b0, 8'b01011000};
+	minerControl mine(blockHeader, satisfactoryHash, clock);
 
 	// Give inputs and runtime
 	initial begin
-		// Initialize inputs to 0
-		clock = 0;
 
-		originalValue = {data, 1'b1, 359'b0};
+		blockHeader = 640'h0100000081cd02ab7e569e8bcd9317e2fe99f2de44d49ab2b8851ba4a308000000000000e320b6c2fffc8d750423db8b1eb942ae710e951ed797f7affc8892b0f1fc122bc7f5d74df2b9441a42a14695;
 
 		// // time delay (ns)
-		#50
+		#1000
 
 		// End testbench
 		$finish;
 	end
 
 	// Input Manipulation
-	// Toggle clock every 2s0 ns
-	always begin
-		#40 clock = ~clock;
-		hashValReg <= hashedValue;
-		$display("hash: %h", algor.hashedValue);
-	end
-	
+	// Toggle clock every 20 ns
+	always
+		#20 clock = ~clock;
+
 	initial begin
-	// Output filename
-	$dumpfile("SHA256.vcd");
-	// Module to capture and what level, 0 -> all wires
-	$dumpvars(0, SHA256_tb);
+		// Output filename
+		$dumpfile("minerControl.vcd");
+		// Module to capture and what level, 0 -> all wires
+		$dumpvars(0, minerControl_tb);
 	end
 endmodule
