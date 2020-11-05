@@ -34,7 +34,7 @@ module SHA256_tb();
 		hash7In = 32'b01011011111000001100110100011001;
 
 		// // time delay (ns)
-		#1000
+		#80
 
 		// End testbench
 		$finish;
@@ -46,6 +46,14 @@ module SHA256_tb();
 		#20 clock = ~clock;
 		hashValReg <= hashedValue;
 		$display("hash: %h", algor.hashedValue);
+		// hash0In = hash1In;
+		// hash1In = hash2In;
+		// hash2In = hash3In;
+		// hash3In = hash4In;
+		// hash4In = hash5In;
+		// hash5In = hash6In;
+		// hash6In = hash7In;
+		// hash7In = hash0In;
 	end
 	
 	initial begin
