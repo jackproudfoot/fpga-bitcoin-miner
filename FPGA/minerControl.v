@@ -3,11 +3,9 @@ module minerControl(blockHeader, satisfactoryHash, clock);
 	input [639:0] blockHeader;
 	output [255:0] satisfactoryHash;
 
-	wire [447:0] blockOne, blockNonce, blockFinal, blockToHashTemp1, blockToHashTemp2, blockToHash;
+	wire [511:0] blockOne, blockTwo, blockNonce, blockFinal, blockToHash;
 	wire [255:0] shaReturn, hashedVal;
-	wire [191:0] blockTwo;
 	wire [63:0] nonce;
-	wire [63:0] length, lengthBlockOne, lengthBlockTwo, lengthFinal, lengthTemp1, lengthTemp2;
 	wire [31:0] h0_init, h1_init, h2_init, h3_init, h4_init, h5_init, h6_init, h7_init;
 	wire [31:0] q_h0, q_h1, q_h2, q_h3, q_h4, q_h5, q_h6, q_h7;
 	wire [31:0] h0In, h1In, h2In, h3In, h4In, h5In, h6In, h7In, h0Out, h1Out, h2Out, h3Out, h4Out, h5Out, h6Out, h7Out;
@@ -20,8 +18,7 @@ module minerControl(blockHeader, satisfactoryHash, clock);
     assign finalHash = (outCount == 2'b10);
     assign counterAtThree = (outCount == 2'b11);
 
-    assign blockOne = blockHeader[639:192];
-    assign blockTwo = blockHeader[191:0];
+    
 
 	assign h0_init = 32'b01101010000010011110011001100111;
 	assign h1_init = 32'b10111011011001111010111010000101;
@@ -41,45 +38,15 @@ module minerControl(blockHeader, satisfactoryHash, clock);
 	assign h6In = secondBlock ? q_h6 : h6_init;
 	assign h7In = secondBlock ? q_h7 : h7_init;
 
-	// assign h0In = secondBlock ? h7_init : h0_init;
-	// assign h1In = secondBlock ? h6_init : h1_init;
-	// assign h2In = secondBlock ? h5_init : h2_init;
-	// assign h3In = secondBlock ? h4_init : h3_init;
-	// assign h4In = secondBlock ? h3_init : h4_init;
-	// assign h5In = secondBlock ? h2_init : h5_init;
-	// assign h6In = secondBlock ? h1_init : h6_init;
-	// assign h7In = secondBlock ? h0_init : h7_init;
 
-	// assign h0In = h0_init;
-	// assign h1In = h1_init;
-	// assign h2In = h2_init;
-	// assign h3In = h3_init;
-	// assign h4In = h4_init;
-	// assign h5In = h5_init;
-	// assign h6In = h6_init;
-	// assign h7In = h7_init;
+	assign blockOne = blockHeader[639:128];
+    assign blockTwo = {blockHeader[127:0], 1'b1, 373'b0, 10'b1010000000};
 
-	assign blockNonce = {255'b0, 1'b1, nonce, blockTwo[127:0]};
-	assign blockFinal = {191'b0, 1'b1, hashedVal};
-	// assign blockFinal = 448'b0;
+	assign blockFinal = {hashedVal, 1'b1, 246'b0, 9'b100000000};
 
-	assign blockToHashTemp1 = secondBlock ? blockNonce : blockOne;
-	assign blockToHashTemp2 = finalHash ? blockFinal : blockToHashTemp1;
-	assign blockToHash = firstBlock ? blockOne : blockToHashTemp2;
+	assign blockToHash = firstBlock ? blockOne : secondBlock ? blockTwo : blockFinal;
 
-	// assign blockToHash = blockOne; 
-
-	assign lengthBlockOne = {55'b0, 9'b111000000};
-	assign lengthBlockTwo = {56'b0, 8'b11000000};
-	assign lengthFinal = {55'b0, 9'b100000000};
-
-	assign lengthTemp1 = secondBlock ? lengthBlockTwo : lengthBlockOne;
-	assign lengthTemp2 = finalHash ? lengthFinal : lengthTemp1;
-	assign length = firstBlock ? lengthBlockOne : lengthTemp2;
-
-	// assign length = lengthBlockOne;
-
-	SHA256 hashFunction(blockToHash, length, shaReturn, clock, 
+	SHA256 hashFunction(blockToHash, shaReturn, clock, 
 		   				h0In, h1In, h2In, h3In, h4In, h5In, h6In, h7In,
 		   				h0Out, h1Out, h2Out, h3Out, h4Out, h5Out, h6Out, h7Out);
 

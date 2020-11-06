@@ -1,11 +1,10 @@
-module SHA256(originalValue, length, hashedValue, clock, 
+module SHA256(inputSchedule, hashedValue, clock, 
 			  hash0In, hash1In, hash2In, hash3In, hash4In, hash5In, hash6In, hash7In, 
 			  hash0Out, hash1Out, hash2Out, hash3Out, hash4Out, hash5Out, hash6Out, hash7Out);
 
 	input clock;
 	input [31:0] hash0In, hash1In, hash2In, hash3In, hash4In, hash5In, hash6In, hash7In;
-	input [447:0] originalValue;
-	input [63:0] length;
+	input [511:0] inputSchedule;
 	output [31:0] hash0Out, hash1Out, hash2Out, hash3Out, hash4Out, hash5Out, hash6Out, hash7Out;
 	output [255:0] hashedValue;
 
@@ -197,7 +196,7 @@ module SHA256(originalValue, length, hashedValue, clock,
 
 	wire [31:0] hashFinal0, hashFinal1, hashFinal2, hashFinal3, hashFinal4, hashFinal5, hashFinal6, hashFinal7;
 
-	wire [511:0] inputSchedule;
+	
 
 	// // assign (h)ash values
 
@@ -276,9 +275,6 @@ module SHA256(originalValue, length, hashedValue, clock,
 	assign k[61] = 32'b10100100010100000110110011101011;
 	assign k[62] = 32'b10111110111110011010001111110111;
 	assign k[63] = 32'b11000110011100010111100011110010;
-
-	// Pad input
-	assign inputSchedule = {originalValue, length};
 
 
 	// message schedule (w)
@@ -3048,15 +3044,6 @@ module SHA256(originalValue, length, hashedValue, clock,
 	assign b64 = a63;
 	assign a64 = temp1_63 + temp2_63;
     
-    assign hash0Out = a64;
-    assign hash1Out = b64;
-    assign hash2Out = c64;
-    assign hash3Out = d64;
-    assign hash4Out = e64;
-    assign hash5Out = f64;
-    assign hash6Out = g64;
-    assign hash7Out = h64;
-    
 	assign hashFinal0 = hash0In + a64;
 	assign hashFinal1 = hash1In + b64;
 	assign hashFinal2 = hash2In + c64;
@@ -3065,6 +3052,17 @@ module SHA256(originalValue, length, hashedValue, clock,
 	assign hashFinal5 = hash5In + f64;
 	assign hashFinal6 = hash6In + g64;
 	assign hashFinal7 = hash7In + h64;
+
+    assign hash0Out = hashFinal0;
+    assign hash1Out = hashFinal1;
+    assign hash2Out = hashFinal2;
+    assign hash3Out = hashFinal3;
+    assign hash4Out = hashFinal4;
+    assign hash5Out = hashFinal5;
+    assign hash6Out = hashFinal6;
+    assign hash7Out = hashFinal7;
+    
+	
 
 	assign hashedValue = {hashFinal0, hashFinal1, hashFinal2, hashFinal3, hashFinal4, hashFinal5, hashFinal6, hashFinal7};
 endmodule
