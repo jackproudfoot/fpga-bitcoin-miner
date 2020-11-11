@@ -3,3 +3,4 @@
 !*.v
 !Makefile
 !*.xdc
+!*.vhd
