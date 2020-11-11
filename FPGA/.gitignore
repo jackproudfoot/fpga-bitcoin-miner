@@ -2,4 +2,4 @@
 !.gitignore
 !*.v
 !Makefile
-
+!*.xdc
