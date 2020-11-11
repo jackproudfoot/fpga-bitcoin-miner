@@ -46,10 +46,9 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
             tx <= 8'ha7;
     end
 
-    always @(posedge clock) begin
-        if (cooldown == 1000) begin
+    always @(posedge led_clock) begin
+        if (cooldown == 4) begin
             cooldown <= 0;
-            count <= count + 1;
 
             txce <= 1'b1;
         end else begin
