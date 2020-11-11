@@ -45,13 +45,14 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
 
 
     initial begin
-        tx <= regdata[15:8];
+        tx <= 8'b0;
     end
 
     integer sent = 0;
     always @(posedge clock) begin
         if (sent == 99999999) begin
             sent = 0;
+            tx <= regdata[15:8];
             txce <= 1'b1;
         end else begin
             txce <= 1'b0;
