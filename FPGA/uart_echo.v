@@ -3,27 +3,14 @@
 module uart_echo(fpga_clock, reset, txd, rxd);
 
     input fpga_clock, reset, rxd;
-    output txd;
+    output reg txd;
 
-    reg clock;
+    reg clock = 0;
 
-    // create 10Mhz clock from 100 MHz
-    integer clock_cnt;
+    // create 50Mhz clock from 100 MHz
     always @(posedge fpga_clock) begin
-        if (clock_cnt == 9) begin
-            clock <= ~clock;
-            clock_cnt <= 0;
-        end
-        else begin
-            clock_cnt <= clock_cnt + 1;
-        end
+        clock <= ~clock;
     end
-
-    // Want to interface to 115200 baud UART
-    // 10000000 / 115200 = 87 Clocks Per Bit.
-    parameter c_CLOCK_PERIOD_NS = 100;
-    parameter c_CLKS_PER_BIT    = 87;
-    parameter c_BIT_PERIOD      = 8600;
 
     wire frmero, rxce, txmty, bsy;
 
@@ -38,13 +25,16 @@ module uart_echo(fpga_clock, reset, txd, rxd);
     integer cooldown = 0;
     integer count = 0;
 
+    initial begin
+            tx <= 8'ha7;
+    end
+
     always @(posedge clock) begin
         if (cooldown == 1000) begin
             cooldown <= 0;
             count <= count + 1;
 
             txce <= 1'b1;
-            tx <= 8'ha7;
         end else begin
             cooldown <= cooldown + 1;
             txce <= 1'b0;
