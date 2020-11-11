@@ -5,10 +5,10 @@ module uart_tb();
     reg reset, rxd;
     wire txd;
 
-    wire datasent;
+    wire datasent, transmit;
 
 	// Module to test
-	uart_echo uart(clock, reset, txd, rxd, datasent);
+	uart_echo uart(clock, reset, txd, rxd, datasent, transmit);
 
 	// Give inputs and runtime
 	initial begin

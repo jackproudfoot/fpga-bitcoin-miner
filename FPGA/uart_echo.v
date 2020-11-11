@@ -1,9 +1,9 @@
 `timescale 1ns/10ps
  
-module uart_echo(fpga_clock, reset, txd, rxd, datasent);
+module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
 
     input fpga_clock, reset, rxd;
-    output txd;
+    output txd, transmit;
 
     output reg datasent;
 
@@ -28,7 +28,7 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent);
         datasent <= ~datasent;
     end
 
-    wire frmero, rxce, txmty, bsy;
+    wire frmero, rxce, bsy;
 
     reg txce;
 
@@ -36,7 +36,7 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent);
     wire [7:0] rx;
 
     // tiny_uart uart_core(reset, clock, txd, rxd, frmero, rx, rxce, tx, txmty, txce, bsy);
-    uart uart_core(clock, reset, rxd, txd, txce, tx, rxce, rx, bsy, txmty, frmero);
+    uart uart_core(clock, reset, rxd, txd, txce, tx, rxce, rx, bsy, transmit, frmero);
 
 
     integer cooldown = 0;
