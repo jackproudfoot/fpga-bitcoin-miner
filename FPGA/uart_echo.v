@@ -38,20 +38,20 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
     // tiny_uart uart_core(reset, clock, txd, rxd, frmero, rx, rxce, tx, txmty, txce, bsy);
     uart uart_core(clock, reset, rxd, txd, txce, tx, rxce, rx, bsy, transmit, frmero);
 
-    integer sent = 0;
+    
 
 
     initial begin
-            tx <= 8'ha7;
+        tx <= 8'ha7;
     end
 
     always @(posedge rxce) begin
         tx <= rx;
     end
 
-
+    integer sent = 0;
     always @(posedge clock) begin
-        if (sent == 49999999) begin
+        if (sent == 99999999) begin
             sent = 0;
             txce <= 1'b1;
         end else begin
