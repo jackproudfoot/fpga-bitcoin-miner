@@ -1,7 +1,7 @@
-module counter(q, clock, reset);
+module counter32(q, clock, reset);
     input clock, reset;
 
-    output[4:0] q;
+    output[5:0] q;
 
     wire w0, w1, w2, w3, w4;
 
@@ -18,6 +18,9 @@ module counter(q, clock, reset);
     and w31(w3, w2, q[3]);
 
     t_flip_flop t4(q[4], w3, clock, reset);
+    and w41(w4, w3, q[4]);
     
+    t_flip_flop t5(q[5], w4, clock, reset);
+
 
 endmodule

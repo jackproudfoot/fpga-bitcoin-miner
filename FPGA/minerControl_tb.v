@@ -4,9 +4,10 @@ module minerControl_tb();
 	reg clock = 1;
 	reg [639:0] blockHeader;
 	wire [255:0] satisfactoryHash;
+	wire ledControl;
 
 	// Module to test
-	minerControl mine(blockHeader, satisfactoryHash, clock);
+	minerControl mine(blockHeader, satisfactoryHash, clock, ledControl);
 
 	// Give inputs and runtime
 	initial begin

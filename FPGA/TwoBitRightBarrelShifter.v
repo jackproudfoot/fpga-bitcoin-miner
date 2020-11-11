@@ -1,0 +1,37 @@
+module TwoBitRightBarrelShifter(inR2, outR2);
+	input [31:0] inR2;
+	output [31:0] outR2;
+
+	assign outR2[31] = inR2[31];
+	assign outR2[30] = inR2[31];
+	assign outR2[29] = inR2[31];
+	assign outR2[28] = inR2[30];
+	assign outR2[27] = inR2[29];
+	assign outR2[26] = inR2[28];
+	assign outR2[25] = inR2[27];
+	assign outR2[24] = inR2[26];
+	assign outR2[23] = inR2[25];
+	assign outR2[22] = inR2[24];
+	assign outR2[21] = inR2[23];
+	assign outR2[20] = inR2[22];
+	assign outR2[19] = inR2[21];
+	assign outR2[18] = inR2[20];
+	assign outR2[17] = inR2[19];
+	assign outR2[16] = inR2[18];
+	assign outR2[15] = inR2[17];
+	assign outR2[14] = inR2[16];
+	assign outR2[13] = inR2[15];
+	assign outR2[12] = inR2[14];
+	assign outR2[11] = inR2[13];
+	assign outR2[10] = inR2[12];
+	assign outR2[9] = inR2[11];
+	assign outR2[8] = inR2[10];
+	assign outR2[7] = inR2[9];
+	assign outR2[6] = inR2[8];
+	assign outR2[5] = inR2[7];
+	assign outR2[4] = inR2[6];
+	assign outR2[3] = inR2[5];
+	assign outR2[2] = inR2[4];
+	assign outR2[1] = inR2[3];
+	assign outR2[0] = inR2[2];
+endmodule

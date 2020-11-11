@@ -1,10 +1,11 @@
-module minerControl(blockHeader, satisfactoryHash, clock);
+module minerControl(blockHeader, satisfactoryHash, clock, ledControl);
 	input clock;
 	input [639:0] blockHeader;
+	output ledControl;
 	output [255:0] satisfactoryHash;
 
 	wire [511:0] blockOne, blockTwo, blockNonce, blockFinal, blockToHash;
-	wire [255:0] shaReturn, hashedVal;
+	wire [255:0] shaReturn, hashedVal, difficulty, hashToCheck;
 	wire [63:0] nonce;
 	wire [31:0] h0_init, h1_init, h2_init, h3_init, h4_init, h5_init, h6_init, h7_init;
 	wire [31:0] q_h0, q_h1, q_h2, q_h3, q_h4, q_h5, q_h6, q_h7;
@@ -12,7 +13,7 @@ module minerControl(blockHeader, satisfactoryHash, clock);
 	wire [1:0] outCount;
 	wire counterAtThree, firstBlock, secondBlock, finalHash, hashSuccesss;
 
-    counter count(outCount, clock, counterAtThree);
+    mineCounter count(outCount, clock, counterAtThree);
     assign firstBlock = (outCount == 2'b00);
     assign secondBlock = (outCount == 2'b01);
     assign finalHash = (outCount == 2'b10);
@@ -63,9 +64,60 @@ module minerControl(blockHeader, satisfactoryHash, clock);
 	// reg64 nonceReg(nonce, blockToHash[191:128] + 1'b1, ~clock, firstBlock, 1'b0);
 	assign nonce = 64'h42a14695;
 
-	assign hashSuccess = ((shaReturn[255:237] == 19'b0) & (finalHash));
+	assign hashToCheck = {shaReturn[0], shaReturn[1], shaReturn[2], shaReturn[3], shaReturn[4], shaReturn[5], 
+						  shaReturn[6], shaReturn[7], shaReturn[8], shaReturn[9], shaReturn[10], shaReturn[11],
+						  shaReturn[12], shaReturn[13], shaReturn[14], shaReturn[15], shaReturn[16], shaReturn[17],
+						  shaReturn[18], shaReturn[19], shaReturn[20], shaReturn[21], shaReturn[22], shaReturn[23],
+						  shaReturn[24], shaReturn[25], shaReturn[26], shaReturn[27], shaReturn[28], shaReturn[29],
+						  shaReturn[30], shaReturn[31], shaReturn[32], shaReturn[33], shaReturn[34], shaReturn[35],
+						  shaReturn[36], shaReturn[37], shaReturn[38], shaReturn[39], shaReturn[40], shaReturn[41],
+						  shaReturn[42], shaReturn[43], shaReturn[44], shaReturn[45], shaReturn[46], shaReturn[47],
+						  shaReturn[48], shaReturn[49], shaReturn[50], shaReturn[51], shaReturn[52], shaReturn[53],
+						  shaReturn[54], shaReturn[55], shaReturn[56], shaReturn[57], shaReturn[58], shaReturn[59],
+						  shaReturn[60], shaReturn[61], shaReturn[62], shaReturn[63], shaReturn[64], shaReturn[65],
+						  shaReturn[66], shaReturn[67], shaReturn[68], shaReturn[69], shaReturn[70], shaReturn[71],
+						  shaReturn[72], shaReturn[73], shaReturn[74], shaReturn[75], shaReturn[76], shaReturn[77],
+						  shaReturn[78], shaReturn[79], shaReturn[80], shaReturn[81], shaReturn[82], shaReturn[83],
+						  shaReturn[84], shaReturn[85], shaReturn[86], shaReturn[87], shaReturn[88], shaReturn[89],
+						  shaReturn[90], shaReturn[91], shaReturn[92], shaReturn[93], shaReturn[94], shaReturn[95],
+						  shaReturn[96], shaReturn[97], shaReturn[98], shaReturn[99], shaReturn[100], shaReturn[101],
+						  shaReturn[102], shaReturn[103], shaReturn[104], shaReturn[105], shaReturn[106], shaReturn[107],
+						  shaReturn[108], shaReturn[109], shaReturn[110], shaReturn[111], shaReturn[112], shaReturn[113],
+						  shaReturn[114], shaReturn[115], shaReturn[116], shaReturn[117], shaReturn[118], shaReturn[119],
+						  shaReturn[120], shaReturn[121], shaReturn[122], shaReturn[123], shaReturn[124], shaReturn[125],
+						  shaReturn[126], shaReturn[127], shaReturn[128], shaReturn[129], shaReturn[130], shaReturn[131],
+						  shaReturn[132], shaReturn[133], shaReturn[134], shaReturn[135], shaReturn[136], shaReturn[137],
+						  shaReturn[138], shaReturn[139], shaReturn[140], shaReturn[141], shaReturn[142], shaReturn[143],
+						  shaReturn[144], shaReturn[145], shaReturn[146], shaReturn[147], shaReturn[148], shaReturn[149],
+						  shaReturn[150], shaReturn[151], shaReturn[152], shaReturn[153], shaReturn[154], shaReturn[155],
+						  shaReturn[156], shaReturn[157], shaReturn[158], shaReturn[159], shaReturn[160], shaReturn[161],
+						  shaReturn[162], shaReturn[163], shaReturn[164], shaReturn[165], shaReturn[166], shaReturn[167],
+						  shaReturn[168], shaReturn[169], shaReturn[170], shaReturn[171], shaReturn[172], shaReturn[173],
+						  shaReturn[174], shaReturn[175], shaReturn[176], shaReturn[177], shaReturn[178], shaReturn[179],
+						  shaReturn[180], shaReturn[181], shaReturn[182], shaReturn[183], shaReturn[184], shaReturn[185],
+						  shaReturn[186], shaReturn[187], shaReturn[188], shaReturn[189], shaReturn[190], shaReturn[191],
+						  shaReturn[192], shaReturn[193], shaReturn[194], shaReturn[195], shaReturn[196], shaReturn[197],
+						  shaReturn[198], shaReturn[199], shaReturn[200], shaReturn[201], shaReturn[202], shaReturn[203],
+						  shaReturn[204], shaReturn[205], shaReturn[206], shaReturn[207], shaReturn[208], shaReturn[209],
+						  shaReturn[210], shaReturn[211], shaReturn[212], shaReturn[213], shaReturn[214], shaReturn[215],
+						  shaReturn[216], shaReturn[217], shaReturn[218], shaReturn[219], shaReturn[220], shaReturn[221],
+						  shaReturn[222], shaReturn[223], shaReturn[224], shaReturn[225], shaReturn[226], shaReturn[227], 
+						  shaReturn[228], shaReturn[229], shaReturn[230], shaReturn[231], shaReturn[232], shaReturn[233],
+						  shaReturn[234], shaReturn[235], shaReturn[236], shaReturn[237], shaReturn[238], shaReturn[239],
+						  shaReturn[240], shaReturn[241], shaReturn[242], shaReturn[243], shaReturn[244], shaReturn[245],
+						  shaReturn[246], shaReturn[247], shaReturn[248], shaReturn[249], shaReturn[250], shaReturn[251],
+						  shaReturn[252], shaReturn[253], shaReturn[254], shaReturn[255]};
 	
-	assign satisfactoryHash = hashSuccess ? shaReturn : 256'b0;
+	assign difficulty = {16'b0, 240'hffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff};
+	assign hashSuccess = ((difficulty > hashToCheck) & (finalHash));
+
+	assign satisfactoryHash = hashSuccess ? hashToCheck : 256'b0;
+
+	dffe_ref ledDFF(ledControl, hashSuccess, clock, hashSuccess, 1'b0);
+
+
+
+
 
 
 endmodule

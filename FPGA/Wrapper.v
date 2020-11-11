@@ -20,14 +20,18 @@
  *
  **/
 
-module Wrapper(clock, reset);
+module Wrapper(clock, reset, led);
     input clock, reset;
+    output led;
 
     wire rwe, mwe;
     wire[4:0] rd, rs1, rs2;
     wire[31:0] instAddr, instData, 
                rData, regA, regB,
                memAddr, memDataIn, memDataOut;
+
+    wire [255:0] outHash;
+    wire [639:0] blockHeader;
     
     ///// Main Processing Unit
     processor CPU(.clock(clock), .reset(reset), 
@@ -45,7 +49,7 @@ module Wrapper(clock, reset);
                   .data(memDataIn), .q_dmem(memDataOut)); 
                   
     ///// Instruction Memory (ROM)
-    ROM #(.MEMFILE("testALL.mem")) // Add your memory file here
+    ROM #(.MEMFILE("")) // Add your memory file here
     InstMem(.clk(clock), 
             .wEn(1'b0), 
             .addr(instAddr[11:0]), 
@@ -65,5 +69,12 @@ module Wrapper(clock, reset);
             .addr(memAddr[11:0]), 
             .dataIn(memDataIn), 
             .dataOut(memDataOut));
+
+    ///// Mining Operation
+    assign blockHeader = 640'h0100000081cd02ab7e569e8bcd9317e2fe99f2de44d49ab2b8851ba4a308000000000000e320b6c2fffc8d750423db8b1eb942ae710e951ed797f7affc8892b0f1fc122bc7f5d74df2b9441a42a14695;
+    minerControl mineTime(.blockHeader(blockHeader),
+                          .satisfactoryHash(outHash),
+                          .clock(clock),
+                          .ledControl(led));
 
 endmodule
