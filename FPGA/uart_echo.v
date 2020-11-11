@@ -49,17 +49,14 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
         tx <= rx;
     end
 
-    
-    always @(posedge led_clock) begin
-        sent <= 0;
-    end
 
     always @(posedge clock) begin
-        if (sent == 0) begin
-            sent <= 1;
+        if (sent == 49999999) begin
+            sent <= 0;
             txce <= 1'b1;
         end else begin
             txce <= 1'b0;
+            sent <= sent + 1;
         end
 
     end
