@@ -35,18 +35,17 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
     reg [7:0] tx;
     wire [7:0] rx;
 
-    // tiny_uart uart_core(reset, clock, txd, rxd, frmero, rx, rxce, tx, txmty, txce, bsy);
     uart uart_core(clock, reset, rxd, txd, txce, tx, rxce, rx, bsy, transmit, frmero);
 
-    
+    wire [15:0] regdata;
+    wire shift;
+    assign shift = 1'b0;
+
+    shift_reg datareg(regdata, rx, clock, rxce, shift, reset);
 
 
     initial begin
-        tx <= 8'ha7;
-    end
-
-    always @(posedge rxce) begin
-        tx <= rx;
+        tx <= regdata[15:8];
     end
 
     integer sent = 0;
@@ -58,7 +57,31 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
             txce <= 1'b0;
             sent = sent + 1;
         end
-
     end
    
+endmodule
+
+module shift_reg(q, d, clock, enable, shift, reset);
+
+    input clock, enable, shift, reset;
+    input [7:0] d;
+    output reg [15:0] q;
+
+    initial begin
+        q <= 16'b0;
+    end
+
+    always @(posedge clock) begin
+        if (reset) begin
+            q <= 16'b0;
+        end else begin
+            if (enable) begin
+                q <= { q[7:0], d };
+            end else if (shift) begin
+                q <= { q[7:0], 8'b0};
+            end
+        end
+    end
+
+
 endmodule
