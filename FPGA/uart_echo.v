@@ -3,7 +3,7 @@
 module uart_echo(fpga_clock, reset, txd, rxd);
 
     input fpga_clock, reset, rxd;
-    output reg txd;
+    output txd;
 
     reg clock = 0;
 
@@ -19,7 +19,8 @@ module uart_echo(fpga_clock, reset, txd, rxd);
     reg [7:0] tx;
     wire [7:0] rx;
 
-    tiny_uart uart_core(reset, clock, txd, rxd, frmero, rx, rxce, tx, txmty, txce, bsy);
+    // tiny_uart uart_core(reset, clock, txd, rxd, frmero, rx, rxce, tx, txmty, txce, bsy);
+    uart uart_core(clock, reset, rxd, txd, txce, tx, rxce, rx, bsy, txmty, frmero);
 
 
     integer cooldown = 0;
