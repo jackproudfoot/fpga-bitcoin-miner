@@ -1,15 +1,31 @@
 `timescale 1ns/10ps
  
-module uart_echo(fpga_clock, reset, txd, rxd);
+module uart_echo(fpga_clock, reset, txd, rxd, datasent);
 
     input fpga_clock, reset, rxd;
     output txd;
 
-    reg clock = 0;
+    output reg datasent;
 
+    reg clock = 0;
     // create 50Mhz clock from 100 MHz
     always @(posedge fpga_clock) begin
         clock <= ~clock;
+    end
+
+    reg led_clock = 0;
+    integer led_counter = 0;
+    always @(posedge fpga_clock) begin
+        if (led_counter == 49999999) begin
+            led_counter = 0;
+            led_clock = !led_clock;
+        end else begin
+            led_counter = led_counter + 1;
+        end
+    end
+
+    always @(posedge led_clock) begin
+        datasent = !datasent;
     end
 
     wire frmero, rxce, txmty, bsy;
@@ -34,6 +50,7 @@ module uart_echo(fpga_clock, reset, txd, rxd);
         if (cooldown == 1000) begin
             cooldown <= 0;
             count <= count + 1;
+            datasent <= 1;
 
             txce <= 1'b1;
         end else begin

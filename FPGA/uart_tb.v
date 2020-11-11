@@ -5,8 +5,10 @@ module uart_tb();
     reg reset, rxd;
     wire txd;
 
+    wire datasent;
+
 	// Module to test
-	uart_echo uart(clock, reset, txd, rxd);
+	uart_echo uart(clock, reset, txd, rxd, datasent);
 
 	// Give inputs and runtime
 	initial begin
@@ -15,7 +17,7 @@ module uart_tb();
 		#40
         reset <= 1'b0;
 
-        #10000
+        #10000000
 
 		// End testbench
 		$finish;
@@ -24,7 +26,7 @@ module uart_tb();
 	// Input Manipulation
 	// Toggle clock every 4 ns
 	always
-		#1 clock = ~clock;
+		#5 clock = ~clock;
 
 	initial begin
 		// Output filename
