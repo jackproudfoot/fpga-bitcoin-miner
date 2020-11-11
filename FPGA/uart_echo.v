@@ -38,8 +38,6 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
     // tiny_uart uart_core(reset, clock, txd, rxd, frmero, rx, rxce, tx, txmty, txce, bsy);
     uart uart_core(clock, reset, rxd, txd, txce, tx, rxce, rx, bsy, transmit, frmero);
 
-
-    integer cooldown = 0;
     integer sent = 0;
 
 
@@ -52,16 +50,8 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
     end
 
     
-
-    
-    
     always @(posedge led_clock) begin
-        if (cooldown == 4) begin
-            cooldown <= 0;
-            sent <= 0;
-        end else begin
-            cooldown <= cooldown + 1;
-        end
+        sent <= 0;
     end
 
     always @(posedge clock) begin
