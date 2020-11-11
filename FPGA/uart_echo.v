@@ -2,8 +2,8 @@
  
 module uart_echo(fpga_clock, reset, txd, rxd);
 
-    input fpga_clock;
-    input txd, rxd;
+    input fpga_clock, reset, rxd;
+    output txd;
 
     reg clock;
 
@@ -25,9 +25,12 @@ module uart_echo(fpga_clock, reset, txd, rxd);
     parameter c_CLKS_PER_BIT    = 87;
     parameter c_BIT_PERIOD      = 8600;
 
-    wire frmero, rxce, txmty, txce, bsy;
+    wire frmero, rxce, txmty, bsy;
 
-    wire [7:0] tx, rx;
+    reg txce;
+
+    reg [7:0] tx;
+    wire [7:0] rx;
 
     tiny_uart uart_core(reset, clock, txd, rxd, frmero, rx, rxce, tx, txmty, txce, bsy);
 
