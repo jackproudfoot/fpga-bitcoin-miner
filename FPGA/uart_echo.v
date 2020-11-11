@@ -24,8 +24,8 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
         end
     end
 
-    always @(posedge led_clock) begin
-        datasent <= ~datasent;
+    always @(posedge led_clock or negedge led_clock) begin
+        datasent <= led_clock;
     end
 
     wire frmero, rxce, bsy;
@@ -40,7 +40,7 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
 
 
     integer cooldown = 0;
-    integer count = 0;
+    integer sent = 0;
 
     initial begin
             tx <= 8'ha7;
@@ -49,12 +49,20 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
     always @(posedge led_clock) begin
         if (cooldown == 4) begin
             cooldown <= 0;
-
-            txce <= 1'b1;
+            sent <= 0;
         end else begin
             cooldown <= cooldown + 1;
+        end
+    end
+
+    always @(posedge clock) begin
+        if (sent == 0) begin
+            sent <= 1;
+            txce <= 1'b1;
+        end else begin
             txce <= 1'b0;
         end
+
     end
    
 endmodule
