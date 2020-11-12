@@ -16,5 +16,9 @@ shift_reg: module
 	@iverilog -o shift_reg -c module.txt -s shift_reg_tb
 	@vvp shift_reg
 
+seven_segment: module
+	@iverilog -o seven_segment -c module.txt -s seven_segment_tb
+	@vvp seven_segment
+
 module:
 	@ls *?.v > module.txt

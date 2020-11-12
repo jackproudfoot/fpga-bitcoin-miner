@@ -37,11 +37,18 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
 
     uart uart_core(clock, reset, rxd, txd, txce, tx, rxce, rx, bsy, transmit, frmero);
 
-    wire [7:0] regdata;
+    wire [31:0] regdata;
     wire shift;
     assign shift = 1'b0;
 
-    shift_reg datareg(regdata, rx, clock, rxce, shift, reset);
+    localparam HEADER_REG_OUTPUT_WIDTH = 32;
+    localparam HEADER_REG_INPUT_WIDTH = 8;
+    localparam HEADER_REG_DATA_WIDTH = 32;
+    shift_reg #(
+        .OUTPUT_WIDTH(HEADER_REG_OUTPUT_WIDTH), 
+        .INPUT_WIDTH(HEADER_REG_INPUT_WIDTH),
+        .DATA_WIDTH(HEADER_REG_DATA_WIDTH)
+    ) datareg (regdata, rx, clock, rxce, shift, reset);
 
 
     initial begin
@@ -52,29 +59,14 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
     always @(posedge clock) begin
         if (sent == 99999999) begin
             sent = 0;
-            tx <= regdata;
+            tx <= regdata[31:24];
             txce <= 1'b1;
         end else begin
             txce <= 1'b0;
             sent = sent + 1;
         end
     end
-   
-endmodule
-
-
-// module bcd(data);
-
-//     input [31:0] data;
-
-//     reg [3:0] nibble;
     
-//     reg [3:0] char = 4'h11;
+    seven_segment display(regdata, fpga_clock);
 
-//     always @(*) begin
-//         case (nibble)
-
-//         endcase
-//     end
-
-// endmodule
+endmodule
