@@ -1,11 +1,13 @@
 `timescale 1ns/10ps
  
-module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
+module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit, ca, an);
 
     input fpga_clock, reset, rxd;
     output txd, transmit;
 
     output reg datasent;
+
+    output [7:0] ca, an;
 
     reg clock = 0;
     // create 50Mhz clock from 100 MHz
@@ -65,6 +67,6 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
         end
     end
     
-    seven_segment display(regdata, fpga_clock);
+    seven_segment display(ca, an, regdata, fpga_clock);
 
 endmodule

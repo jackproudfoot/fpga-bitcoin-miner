@@ -7,8 +7,10 @@ module uart_tb();
 
     wire datasent, transmit;
 
+	wire [7:0] ca, an;
+	
 	// Module to test
-	uart_echo uart(clock, reset, txd, rxd, datasent, transmit);
+	uart_echo uart(clock, reset, txd, rxd, datasent, transmit, ca, an);
 
 	// Give inputs and runtime
 	initial begin

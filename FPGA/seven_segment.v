@@ -1,4 +1,6 @@
-module seven_segment(data, clock);
+module seven_segment(ca, an, data, clock);
+
+    output [7:0] ca, an;
 
     input [31:0] data;
     input clock;
