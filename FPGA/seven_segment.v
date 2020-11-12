@@ -45,14 +45,15 @@ module seven_segment(ca, an, data, clock);
     
     wire [7:0] an;
 
-    assign an[0] = digit_index[2] | digit_index[1] | digit_index[0];
-    assign an[1] = digit_index[2] | digit_index[1] | ~digit_index[0];
-    assign an[2] = digit_index[2] | ~digit_index[1] | digit_index[0];
-    assign an[3] = digit_index[2] | ~digit_index[1] | ~digit_index[0];
-    assign an[4] = ~digit_index[2] | digit_index[1] | digit_index[0];
-    assign an[5] = ~digit_index[2] | digit_index[1] | ~digit_index[0];
-    assign an[6] = ~digit_index[2] | ~digit_index[1] | digit_index[0];
-    assign an[7] = ~digit_index[2] | ~digit_index[1] | ~digit_index[0];
+    // Anodes shifted by 1... idk why but that's what made it work
+    assign an[7] = digit_index[2] | digit_index[1] | digit_index[0];
+    assign an[0] = digit_index[2] | digit_index[1] | ~digit_index[0];
+    assign an[1] = digit_index[2] | ~digit_index[1] | digit_index[0];
+    assign an[2] = digit_index[2] | ~digit_index[1] | ~digit_index[0];
+    assign an[3] = ~digit_index[2] | digit_index[1] | digit_index[0];
+    assign an[4] = ~digit_index[2] | digit_index[1] | ~digit_index[0];
+    assign an[5] = ~digit_index[2] | ~digit_index[1] | digit_index[0];
+    assign an[6] = ~digit_index[2] | ~digit_index[1] | ~digit_index[0];
 
 
 endmodule
