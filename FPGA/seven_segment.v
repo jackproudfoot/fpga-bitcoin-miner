@@ -77,12 +77,12 @@ module converter(char_code, nibble);
             4'h8    : char_code <= 8'b10000000;
             4'h9    : char_code <= 8'b10010000;
             
-            4'ha    : char_code <= 8'b11110111;
-            4'hb    : char_code <= 8'b01111111;
-            4'hc    : char_code <= 8'b10111001;
-            4'hd    : char_code <= 8'b00111111;
-            4'he    : char_code <= 8'b01111001;
-            4'hf    : char_code <= 8'b11110001;
+            4'ha    : char_code <= 8'b00001000;
+            4'hb    : char_code <= 8'b00000000;
+            4'hc    : char_code <= 8'b01000110;
+            4'hd    : char_code <= 8'b01000000;
+            4'he    : char_code <= 8'b00000110;
+            4'hf    : char_code <= 8'b00001110;
             default : char_code <= 8'b11111111;
         endcase
     end
