@@ -41,11 +41,9 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
     wire shift;
     assign shift = 1'b0;
 
-    localparam HEADER_REG_OUTPUT_WIDTH = 32;
     localparam HEADER_REG_INPUT_WIDTH = 8;
     localparam HEADER_REG_DATA_WIDTH = 32;
     shift_reg #(
-        .OUTPUT_WIDTH(HEADER_REG_OUTPUT_WIDTH), 
         .INPUT_WIDTH(HEADER_REG_INPUT_WIDTH),
         .DATA_WIDTH(HEADER_REG_DATA_WIDTH)
     ) datareg (regdata, rx, clock, rxce, shift, reset);

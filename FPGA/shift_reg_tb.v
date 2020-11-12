@@ -6,7 +6,7 @@ module shift_reg_tb();
         en = 0;
 	
     reg [7:0] d;
-    wire [7:0] q;
+    wire [15:0] q;
 
     shift_reg register(q, d, clock, en, shift, reset);
 
