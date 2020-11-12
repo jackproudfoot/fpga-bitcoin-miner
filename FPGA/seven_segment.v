@@ -66,16 +66,16 @@ module converter(char_code, nibble);
     // Character Assignment
     always @(*) begin
         case (nibble)
-            4'h1    : char_code <= 8'b11111001;
-            4'h2    : char_code <= 8'b10100100;
-            4'h3    : char_code <= 8'b10110000;
-            4'h4    : char_code <= 8'b10011001;
-            4'h5    : char_code <= 8'b10010010;
-            4'h6    : char_code <= 8'b10000010;
-            4'h7    : char_code <= 8'b11111000;
-            4'h8    : char_code <= 8'b10000000;
-            4'h9    : char_code <= 8'b10010000;
-            default : char_code <= 8'b11111111;
+            4'h1    : char_code <= 8'b01111001;
+            4'h2    : char_code <= 8'b00100100;
+            4'h3    : char_code <= 8'b00110000;
+            4'h4    : char_code <= 8'b00011001;
+            4'h5    : char_code <= 8'b00010010;
+            4'h6    : char_code <= 8'b00000010;
+            4'h7    : char_code <= 8'b01111000;
+            4'h8    : char_code <= 8'b00000000;
+            4'h9    : char_code <= 8'b00010000;
+            default : char_code <= 8'b01111111;
         endcase
     end
 
