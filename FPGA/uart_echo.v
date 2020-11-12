@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
  
-module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit, ca, an, dp);
+module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit, ca, an);
 
     input fpga_clock, reset, rxd;
     output txd, transmit;
