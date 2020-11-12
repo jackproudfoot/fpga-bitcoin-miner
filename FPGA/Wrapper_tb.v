@@ -9,20 +9,20 @@ module Wrapper_tb();
 	// Give inputs and runtime
 	initial begin
 		// Initialize inputs to 0
-		clk = 0;
+		clk = 1;
 		reset = 0;
 
 		// time delay (ns)
-		#160
+		#300
 
 		// End testbench
 		$finish;
 	end
 
 	// Input Manipulation
-	// Toggle clock every 2s0 ns
+	// Toggle clock every 5 ns
 	always
-		#20 clk = ~clk;
+		#5 clk = ~clk;
 	
 	initial begin
 	// Output filename

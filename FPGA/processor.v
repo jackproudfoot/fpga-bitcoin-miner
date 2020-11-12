@@ -39,7 +39,11 @@ module processor(
     ctrl_readRegB,                  // O: Register to read from port B of RegFile
     data_writeReg,                  // O: Data to write to for RegFile
     data_readRegA,                  // I: Data from port A of RegFile
-    data_readRegB                   // I: Data from port B of RegFile
+    data_readRegB,                  // I: Data from port B of RegFile
+
+    // minerControl
+    nonce,                          // O: Nonce value for minerControl
+    hashSuccess                     // I: Sucessful hash bit flag
      
     );
 
@@ -60,6 +64,10 @@ module processor(
     output [4:0] ctrl_writeReg, ctrl_readRegA, ctrl_readRegB;
     output [31:0] data_writeReg;
     input [31:0] data_readRegA, data_readRegB;
+
+    // minerControl
+    output [31:0] nonce;
+    input hashSuccess;
 
     /* YOUR CODE STARTS HERE */
 
@@ -83,6 +91,9 @@ module processor(
     wire mwByALUA, xmByALUA, mwByALUB, xmByALUB, noBypassMW, noBypassXM;
     wire [4:0] rtrd;
     wire [31:0] bypassRSMW, rsDataBy, bypassRTMW, rtDataBy;
+
+    // Wires for bitcoin mining
+    wire timeToMine;
 
     // Wires for ALU
     wire overflow, isNotEqual, isLessThan, rtrdSelect, immedCheck, isImmLoadStore, isBranching, isBLT;
@@ -121,9 +132,9 @@ module processor(
     wire [31:0] instrInMW, instrOutMW, aluToWrite, memToWrite;
 
     // Wires to determine what goes into RegFile
-    wire dataToWrite;
+    wire dataToWrite, isMine;
     wire [4:0] opCodeMW, aluOPCodeMW, rdWrite, writeBackRegister, rdSetBex;
-    wire [31:0] data_writeRegLoad;
+    wire [31:0] data_writeRegLoad, dataWriteTemp;
     
     // Take output of register to determine PC
     assign PCplus1 = PCout + 32'b1;
@@ -157,7 +168,7 @@ module processor(
     assign usesRDasInput = (instrOutFD[31:27] == 5'b00010) |
                            (instrOutFD[31:27] == 5'b00100) | 
                            (instrOutFD[31:27] == 5'b00110) | 
-                           (instrOutFD[31:27] == 5'b00111) | 
+                           (instrOutFD[31:27] == 5'b00111) |
                            (instrOutFD[31:27] == 5'b01000);
 
     // assign OUT = SELECT ? in1 : in0
@@ -190,6 +201,7 @@ module processor(
     assign isImmLoadStore = (opCodeDX == 5'b00101) | 
                             (opCodeDX == 5'b00111) | 
                             (opCodeDX == 5'b01000);
+
     // Determine if a branch is being taken
     assign isBranching = (opCodeDX == 5'b00010) | 
                          (opCodeDX == 5'b00110) | 
@@ -246,6 +258,9 @@ module processor(
     assign bypassRTMW = mwByALUB ? data_writeReg : rtData;
     assign rtDataBy = xmByALUB ? address_dmem : bypassRTMW;
     /////////////////
+
+    // Sets nonce in minerControl to the value of $rs
+    assign nonce = rsDataBy;
 
     // Sign extend immediate and determine if addi instruction is called
     signExtend32 extendImm(extendedImm, immediate);
@@ -318,8 +333,15 @@ module processor(
     // Determine if a JAL instruction is taken
     assign isJumpAndLink = (opCodeDX == 5'b00011);
 
+    // Determine if a call to minerControl is occuring
+    assign timeToMine = (opCodeDX == 5'b11111);   
+
+    // Chose 1 if hashSuccess is high
+    assign data_resultMine1 = timeToMine ? 32'b0 : data_resultALU;
+    assign data_resultMine2 = hashSuccess ? 32'b1 : data_resultMine1;
+
     // Chose PC + 1 to be output of execute if JAL instruction is called
-    assign data_resultJumps = isJumpAndLink ? PCoutDX : data_resultALU;
+    assign data_resultJumps = isJumpAndLink ? PCoutDX : data_resultMine2;
 
     // Chose MULT/DIV result if a MULT/DIV instruction was called
     assign data_resultMultDiv = data_resultRDY ? data_resultMD : data_resultJumps;
@@ -370,11 +392,15 @@ module processor(
     // Chose $rd to be $r31 if a JAL instruction is called
     assign rdWrite = jalTime ? 5'b11111 : writeBackRegister;
 
-    // Determine if a LW instruction is caleed
+    // Determine if a LW instruction is called
     assign isLoad = instrOutMW[31:27] == 5'b01000;
 
+    // Determine if a LW instruction is called
+    assign isMine = instrOutMW[31:27] == 5'b11111;
+
     // Chose value to go into $rd
-    assign data_writeReg = isLoad ? memToWrite : aluToWrite;
+    assign dataWriteTemp = hashSuccess ? 32'b1 : aluToWrite;
+    assign data_writeReg = isLoad ? memToWrite : dataWriteTemp;
 
     // Set writeEnable to high for addi, LW, JAL, and R-type instructions
     assign ctrl_writeEnable = (instrOutMW[31:27] == 5'b00101) |
