@@ -12,15 +12,29 @@ module shift_reg_tb();
 
 	// Give inputs and runtime
 	initial begin
+        d <= 8'h00;
+        #5
+        
         d <= 8'ha7;
         en <= 1'b1;
-        #5
+        #10
         d <= 8'h82;
         en <= 1'b0;
-        #15
+
+        #10
         en <= 1'b1;
-        #5
+        #10
         en <= 1'b0;
+        
+        #10
+        shift <= 1'b1;
+        #10
+        shift <= 1'b0;
+
+        #10
+        shift <= 1'b1;
+        #10
+        shift <= 1'b0;
 
         #5000
 

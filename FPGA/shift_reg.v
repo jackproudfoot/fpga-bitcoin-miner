@@ -17,12 +17,18 @@ module shift_reg #(parameter OUTPUT_WIDTH=8, INPUT_WIDTH=8, DATA_WIDTH=16) (q, d
         end else begin
             if (enable) begin
                 data <= { data[DATA_WIDTH-INPUT_WIDTH:0], d };
+
+                q <= data[DATA_WIDTH-INPUT_WIDTH:DATA_WIDTH-INPUT_WIDTH-OUTPUT_WIDTH];
             end else if (shift) begin
-                q <= { data[DATA_WIDTH-OUTPUT_WIDTH:0], {OUTPUT_WIDTH{1'b0}}};
+                data <= { data[DATA_WIDTH-OUTPUT_WIDTH:0], {OUTPUT_WIDTH{1'b0}}};
+
+                q <= data[DATA_WIDTH-OUTPUT_WIDTH:DATA_WIDTH-OUTPUT_WIDTH-OUTPUT_WIDTH];
             end else begin
                 q <= data[DATA_WIDTH-1:DATA_WIDTH-OUTPUT_WIDTH];
             end
         end
+
+        
     end
 
 
