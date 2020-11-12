@@ -37,7 +37,7 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
 
     uart uart_core(clock, reset, rxd, txd, txce, tx, rxce, rx, bsy, transmit, frmero);
 
-    wire [15:0] regdata;
+    wire [7:0] regdata;
     wire shift;
     assign shift = 1'b0;
 
@@ -52,7 +52,7 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
     always @(posedge clock) begin
         if (sent == 99999999) begin
             sent = 0;
-            tx <= regdata[15:8];
+            tx <= regdata;
             txce <= 1'b1;
         end else begin
             txce <= 1'b0;
@@ -62,24 +62,27 @@ module uart_echo(fpga_clock, reset, txd, rxd, datasent, transmit);
    
 endmodule
 
-module shift_reg(q, d, clock, enable, shift, reset);
+module shift_reg #(parameter OUTPUT_WIDTH=8, INPUT_WIDTH=8, DATA_WIDTH=16) (q, d, clock, enable, shift, reset);
 
     input clock, enable, shift, reset;
-    input [7:0] d;
-    output reg [15:0] q;
+    input [INPUT_WIDTH-1:0] d;
+    output reg [OUTPUT_WIDTH-1:0] q;
+
+    reg [DATA_WIDTH-1:0] data;
 
     initial begin
-        q <= 16'b0;
+        data <= {DATA_WIDTH{1'b0}};
+        q <= data[DATA_WIDTH-1:DATA_WIDTH-OUTPUT_WIDTH];
     end
 
     always @(posedge clock) begin
         if (reset) begin
-            q <= 16'b0;
+            data <= {DATA_WIDTH{1'b0}};
         end else begin
             if (enable) begin
-                q <= { q[7:0], d };
+                data <= { data[DATA_WIDTH-INPUT_WIDTH:0], d };
             end else if (shift) begin
-                q <= { q[7:0], 8'b0};
+                q <= { data[DATA_WIDTH-OUTPUT_WIDTH:0], {OUTPUT_WIDTH{1'b0}}};
             end
         end
     end
