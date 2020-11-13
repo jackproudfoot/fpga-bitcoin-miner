@@ -11,7 +11,7 @@ module uart_tb();
 	reg nonce_we;
 
 	// Module to test
-	uart_core uart(clock, reset, txd, rxd, ca, an, display_toggle);
+	uart_core uart(clock, reset, txd, rxd, ca, an, nonce_we, display_toggle);
 
 	// Give inputs and runtime
 	initial begin
