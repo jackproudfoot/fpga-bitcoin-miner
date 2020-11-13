@@ -81,11 +81,14 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
             end
             else if (bytesToSend == 0) begin
                 transmit <= 1'b0;
+                txce <= 1'b0;
 
                 bytesToSend = 4;
 
                 shift_nonce <= 1'b0;
             end
+        end else begin
+            txce <= 1'b0;
         end
     end
 
