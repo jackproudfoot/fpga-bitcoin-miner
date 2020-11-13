@@ -1,9 +1,9 @@
 `timescale 1ns/10ps
  
-module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, display_toggle);
+module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, display_toggle);
 
     // input [31:0] nonce;
-    input nonce_we;
+    input nonce_we, transmit_data;
 
     input display_toggle;
 
@@ -28,6 +28,7 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, display_toggle);
     initial begin
         tx <= 8'b0;
     end
+
 
     uart serial_module(clock, reset, rxd, txd, txce, tx, rxce, rx, is_receiving, is_transmitting, error);
 
@@ -55,25 +56,51 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, display_toggle);
         .INPUT_WIDTH(NONCE_REG_INPUT_WIDTH),
         .DATA_WIDTH(NONCE_REG_DATA_WIDTH)
     ) nonce_reg (nonce_data, nonce_input, clock, nonce_we, shift_nonce, reset);
-    //) datareg (nonce_data, nonce_input, clock, nonce_we, shift_nonce, reset);
 
 
 
-    integer sent = 0;
-    always @(posedge clock) begin
-        if (sent == 99999999) begin
-            tx <= header_data[639:608];
-            txce <= 1'b1;
-            sent = 0;
-            
-            shift_nonce <= 1'b1;
-        end else begin
-            txce <= 1'b0;
-            sent = sent + 1;
-            
-            shift_nonce <= 1'b0;
+    integer bytesToSend = 0;
+
+    reg transmit = 0;
+
+    always @(posedge fpga_clock) begin
+        if (transmit_data) begin
+            transmit <= 1'b1;
+            bytesToSend = 4;
         end
     end
+
+    always @(posedge clock) begin
+        if (transmit & ~is_receiving) begin
+            if (bytesToSend > 0) begin
+                tx <= nonce_data[31:24];
+                txce <= 1'b1;
+
+                bytesToSend = bytesToSend - 1;
+            end
+
+            if (bytesToSend == 0) begin
+                transmit <= 1'b0;
+            end
+        end
+    end
+
+
+    // integer sent = 0;
+    // always @(posedge clock) begin
+    //     if (sent == 99999999) begin
+    //         tx <= nonce_data[31:24];
+    //         txce <= 1'b1;
+    //         sent = 0;
+            
+    //         shift_nonce <= 1'b1;
+    //     end else begin
+    //         txce <= 1'b0;
+    //         sent = sent + 1;
+            
+    //         shift_nonce <= 1'b0;
+    //     end
+    // end
     
 
 

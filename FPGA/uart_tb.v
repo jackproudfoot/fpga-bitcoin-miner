@@ -8,10 +8,10 @@ module uart_tb();
 	wire [7:0] ca, an;
 
 	reg [31:0] nonce = 32'h12345678;
-	reg nonce_we;
+	reg nonce_we, transmit_data = 0;
 
 	// Module to test
-	uart_core uart(clock, reset, txd, rxd, ca, an, nonce_we, display_toggle);
+	uart_core uart(clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, display_toggle);
 
 	// Give inputs and runtime
 	initial begin
