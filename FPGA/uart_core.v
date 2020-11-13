@@ -58,19 +58,19 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
     ) nonce_reg (nonce_data, nonce_input, clock, nonce_we, shift_nonce, reset);
 
 
+    reg done_transmitting = 0;
 
-    reg transmit = 0;
+    wire transmit;
 
-    always @(posedge fpga_clock) begin
-        if (transmit_data) begin
-            transmit <= 1'b1;
-        end
-    end
+    localparam TRANSMIT_REG_DATA_WIDTH = 1;
+    register #(
+        .DATA_WIDTH(TRANSMIT_REG_DATA_WIDTH)
+    ) transmit_status_reg (transmit, transmit_data, fpga_clock, transmit_data, (reset | done_transmitting));
 
     integer bytesToSend = 4;
 
     always @(posedge clock) begin
-        if (transmit & ~is_receiving) begin
+        if (transmit && ~is_receiving) begin
             if (bytesToSend > 0) begin
                 tx <= nonce_data[31:24];
                 txce <= 1'b1;
@@ -80,7 +80,7 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
                 bytesToSend = bytesToSend - 1;
             end
             else if (bytesToSend == 0) begin
-                transmit <= 1'b0;
+                done_transmitting <= 1'b1;
                 txce <= 1'b0;
 
                 bytesToSend = 4;
@@ -89,25 +89,10 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
             end
         end else begin
             txce <= 1'b0;
+            done_transmitting <= 1'b0;
         end
     end
 
-
-    // integer sent = 0;
-    // always @(posedge clock) begin
-    //     if (sent == 99999999) begin
-    //         tx <= nonce_data[31:24];
-    //         txce <= 1'b1;
-    //         sent = 0;
-            
-    //         shift_nonce <= 1'b1;
-    //     end else begin
-    //         txce <= 1'b0;
-    //         sent = sent + 1;
-            
-    //         shift_nonce <= 1'b0;
-    //     end
-    // end
     
 
 
@@ -115,5 +100,24 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
     assign display_data = display_toggle ? header_data[639:608] : nonce_data[31:0];
 
     seven_segment display(ca, an, display_data, fpga_clock);
+
+endmodule
+
+module register #(parameter DATA_WIDTH=32) (q, d, clock, en, reset);
+
+    output reg [DATA_WIDTH-1:0] q;
+
+    input [DATA_WIDTH-1:0] d;
+    input clock, en, reset;
+
+    always @(posedge clock) begin
+        if (reset) begin
+            q <= { DATA_WIDTH{1'b0}};
+        end else begin
+            if (en) begin
+                q <= d;
+            end
+        end
+    end
 
 endmodule
