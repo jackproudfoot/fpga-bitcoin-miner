@@ -59,16 +59,15 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
 
 
 
-    integer bytesToSend = 0;
-
     reg transmit = 0;
 
     always @(posedge fpga_clock) begin
         if (transmit_data) begin
             transmit <= 1'b1;
-            bytesToSend = 4;
         end
     end
+
+    integer bytesToSend = 4;
 
     always @(posedge clock) begin
         if (transmit & ~is_receiving) begin
@@ -76,11 +75,16 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
                 tx <= nonce_data[31:24];
                 txce <= 1'b1;
 
+                shift_nonce <= 1'b1;
+
                 bytesToSend = bytesToSend - 1;
             end
-
-            if (bytesToSend == 0) begin
+            else if (bytesToSend == 0) begin
                 transmit <= 1'b0;
+
+                bytesToSend = 4;
+
+                shift_nonce <= 1'b0;
             end
         end
     end
