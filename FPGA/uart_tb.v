@@ -5,22 +5,29 @@ module uart_tb();
     reg reset, rxd;
     wire txd;
 
+	wire error;
+
 	wire [7:0] ca, an;
 
 	reg [31:0] nonce = 32'h12345678;
 	reg nonce_we, transmit_data = 0;
 
 	// Module to test
-	uart_core uart(clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, display_toggle);
+	uart_core uart(clock, reset, txd, rxd, ca, an, nonce, nonce_we, transmit_data, display_toggle, error);
 
 	// Give inputs and runtime
 	initial begin
-        #10
-		nonce_we <= 1'b1;
-		#10
 		nonce_we <= 1'b0;
+        #20
+		nonce_we <= 1'b1;
+		#20
+		nonce_we <= 1'b0;
+		#40
+		transmit_data <= 1;
+		#20
+		transmit_data <= 0;
 
-        #10000000
+        #1000
 
 		// End testbench
 		$finish;
