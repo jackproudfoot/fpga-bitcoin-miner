@@ -1,23 +1,24 @@
 `timescale 1 ns / 100 ps
 module uart_tb();
-	reg clock = 1;
+	reg clock = 1, display_toggle = 0;
 	
     reg reset, rxd;
     wire txd;
 
-    wire datasent, transmit;
-
 	wire [7:0] ca, an;
-	
+
+	reg [31:0] nonce = 32'h12345678;
+	reg nonce_we;
+
 	// Module to test
-	uart_echo uart(clock, reset, txd, rxd, datasent, transmit, ca, an);
+	uart_core uart(clock, reset, txd, rxd, ca, an, display_toggle);
 
 	// Give inputs and runtime
 	initial begin
-        reset <= 1'b1;
-		// time delay (ns)
-		#40
-        reset <= 1'b0;
+        #10
+		nonce_we <= 1'b1;
+		#10
+		nonce_we <= 1'b0;
 
         #10000000
 
