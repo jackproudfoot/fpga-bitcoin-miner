@@ -20,9 +20,10 @@
  *
  **/
 
-module Wrapper(clock, reset, led);
+module Wrapper(clock, reset, led, ca, an);
     input clock, reset;
     output led;
+    output [7:0] ca, an;
 
     wire rwe, mwe;
     wire[4:0] rd, rs1, rs2;
@@ -35,7 +36,6 @@ module Wrapper(clock, reset, led);
     wire [255:0] outHash;
     wire [639:0] blockHeader;
 
-    wire [7:0] ca, an;
     wire [31:0] finalNonce;
 
     // Changing 100 MHz clock to 60 MHz

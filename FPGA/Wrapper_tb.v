@@ -2,9 +2,10 @@
 module Wrapper_tb();
 	reg clk, reset;
 	wire led;
+	wire [7:0] ca, an;
 
 	// Module to test
-	Wrapper processor(clk, reset, led);
+	Wrapper processor(clk, reset, led, ca, an);
 
 	// Give inputs and runtime
 	initial begin
