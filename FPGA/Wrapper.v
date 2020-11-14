@@ -35,6 +35,9 @@ module Wrapper(clock, reset, led);
     wire [255:0] outHash;
     wire [639:0] blockHeader;
 
+    wire [7:0] ca, an;
+    wire [31:0] finalNonce;
+
     // Changing 100 MHz clock to 60 MHz
     // reg mineClock = 0;
     // integer mineCounter = 0;
@@ -47,7 +50,7 @@ module Wrapper(clock, reset, led);
     //   end
     // end
 
-    // Changing 100 MHz clock to 20 MHz
+    // Changing 100 MHz clock to ? MHz
     reg procClock = 0;
     integer procCounter = 0;
     always @(posedge clock) begin
@@ -77,7 +80,9 @@ module Wrapper(clock, reset, led);
       ///// minerControl 
                   .nonce(nonce),
                   .hashSuccess(hashSuccess),
-                  .resetMine(resetMine));
+                  .resetMine(resetMine),
+      ///// Send
+                  .timeToSend(timeToSend));
                   
     ///// Instruction Memory (ROM)
     ROM #(.MEMFILE("testMine.mem")) // Add your memory file here
@@ -114,5 +119,9 @@ module Wrapper(clock, reset, led);
                           .nonce(nonce),
                           .hashSuccess(hashSuccess),
                           .reset(resetMine));
+
+    ///// Seven Segment Display
+    reg32 goodNonce(finalNonce, nonce, clock, hashSuccess, 1'b0);
+    seven_segment disp(.ca(ca), .an(an), .data(finalNonce), .clock(clock));
 
 endmodule
