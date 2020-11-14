@@ -15,7 +15,9 @@ wire rdy;
 wire [7:0] rxdata;
 
 wire loopback;
-reg rdy_clr = 0;
+//reg rdy_clr = 0;
+wire rdy_clr;
+assign rdy_clr = clk;
 
 uart test_uart(.din(data),
 	       .wr_en(enable),
@@ -39,8 +41,8 @@ always begin
 end
 
 always @(posedge rdy) begin
-	#2 rdy_clr <= 1;
-	#2 rdy_clr <= 0;
+	// #2 rdy_clr <= 1;
+	// #2 rdy_clr <= 0;
 	if (rxdata != data) begin
 		$display("FAIL: rx data %x does not match tx %x", rxdata, data);
 		$finish;

@@ -13,7 +13,7 @@ module uart_tb();
 	reg nonce_we, transmit_data = 0;
 
 	// Module to test
-	uart_core uart(clock, reset, txd, rxd, ca, an, nonce, nonce_we, transmit_data, display_toggle, error);
+	uart_core uart(clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, display_toggle, error);
 
 	// Give inputs and runtime
 	initial begin
@@ -34,9 +34,8 @@ module uart_tb();
 	end
 
 	// Input Manipulation
-	// Toggle clock every 4 ns
 	always
-		#5 clock = ~clock;
+		#1 clock = ~clock;
 
 	initial begin
 		// Output filename
