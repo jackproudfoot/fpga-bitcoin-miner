@@ -11,7 +11,7 @@ module uart_tb();
 	reg nonce_we, transmit_data = 0;
 
 	// Module to test
-	uart_core uart(clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, display_toggle);
+	uart_wrapper test_wrapper(clock, reset, rxd, txd, ca, an, nonce_we, transmit_data, display_toggle);
 
 	// Give inputs and runtime
 	initial begin
@@ -26,7 +26,7 @@ module uart_tb();
 		transmit_data <= 0;
 
         #100000
-		
+
 		nonce_we <= 1'b1;
 		#20
 		nonce_we <= 1'b0;
