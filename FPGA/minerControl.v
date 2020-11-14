@@ -1,5 +1,5 @@
-module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, hashSuccess);
-	input clock;
+module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, hashSuccess, reset);
+	input clock, reset;
 	input [31:0] nonce;
 	input [639:0] blockHeader;
 	output ledControl, hashSuccess;
@@ -13,9 +13,12 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 	wire [31:0] h0In, h1In, h2In, h3In, h4In, h5In, h6In, h7In, h0Out, h1Out, h2Out, h3Out, h4Out, h5Out, h6Out, h7Out;
 	wire [15:0] test1;
 	wire [1:0] outCount;
-	wire counterAtThree, firstBlock, secondBlock, finalHash, test;
+	wire counterAtThree, firstBlock, secondBlock, finalHash, legitReset, wasReset;
 
-    mineCounter count(outCount, clock, counterAtThree);
+	dffe_ref resetDFF(wasReset, reset, ~clock, 1'b1, 1'b0);
+	assign legitReset = (reset & ~wasReset);
+
+    mineCounter count(outCount, clock, (counterAtThree | legitReset));
     assign firstBlock = (outCount == 2'b00);
     assign secondBlock = (outCount == 2'b01);
     assign finalHash = (outCount == 2'b10);
@@ -43,7 +46,7 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 
 
 	assign blockOne = blockHeader[639:128];
-    assign blockTwo = {blockHeader[127:0], 1'b1, 373'b0, 10'b1010000000};
+    assign blockTwo = {blockHeader[127:32], nonce, 1'b1, 373'b0, 10'b1010000000};
 
 	assign blockFinal = {hashedVal, 1'b1, 246'b0, 9'b100000000};
 
@@ -65,6 +68,9 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 
 	// reg64 nonceReg(nonce, blockToHash[191:128] + 1'b1, ~clock, firstBlock, 1'b0);
 	// assign nonce = 32'h42a14695;
+
+	// assign shaReturn = firstBlock ? 256'b1 : secondBlock ? 256'b1 : 256'b0;
+	//assign shaReturn = 256'b0;
 
 	assign hashToCheck = {shaReturn[7], shaReturn[6], shaReturn[5], shaReturn[4], shaReturn[3], shaReturn[2], shaReturn[1], shaReturn[0], 
 						  shaReturn[15], shaReturn[14], shaReturn[13], shaReturn[12], shaReturn[11], shaReturn[10], shaReturn[9], shaReturn[8], 
@@ -99,12 +105,8 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 						  shaReturn[247], shaReturn[246], shaReturn[245], shaReturn[244], shaReturn[243], shaReturn[242], shaReturn[241], shaReturn[240], 
 						  shaReturn[255], shaReturn[254], shaReturn[253], shaReturn[252], shaReturn[251], shaReturn[250], shaReturn[249], shaReturn[248]};
 	
-	// assign difficulty = {16'b0, 240'hffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff};
-	// assign test = (difficulty > shaReturn);
-	// assign hashSuccess = ((difficulty > shaReturn) & (finalHash));
-	assign hashSuccess = ((hashToCheck[255:236] == 19'b0) & (finalHash));
-
-
+	assign difficulty = {16'b0, 240'hffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff};
+	assign hashSuccess = ((difficulty > hashToCheck) & (finalHash));
 	assign satisfactoryHash = hashSuccess ? shaReturn : 256'b0;
 
 	dffe_ref ledDFF(ledControl, hashSuccess, clock, hashSuccess, 1'b0);

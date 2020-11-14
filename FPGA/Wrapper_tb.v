@@ -13,7 +13,7 @@ module Wrapper_tb();
 		reset = 0;
 
 		// time delay (ns)
-		#300
+		#2500
 
 		// End testbench
 		$finish;

@@ -2,6 +2,7 @@
 module minerControl_tb();
 	//NOT DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	reg clock = 1;
+	reg reset = 0;
 	reg [639:0] blockHeader;
 	reg [31:0] nonce;
 	wire [255:0] satisfactoryHash;
@@ -9,7 +10,7 @@ module minerControl_tb();
 	wire hashSuccess;
 
 	// Module to test
-	minerControl mine(blockHeader, satisfactoryHash, clock, ledControl, nonce, hashSuccess);
+	minerControl mine(blockHeader, satisfactoryHash, clock, ledControl, nonce, hashSuccess, reset);
 
 	// Give inputs and runtime
 	initial begin
@@ -17,7 +18,7 @@ module minerControl_tb();
 		blockHeader = 640'h0100000081cd02ab7e569e8bcd9317e2fe99f2de44d49ab2b8851ba4a308000000000000e320b6c2fffc8d750423db8b1eb942ae710e951ed797f7affc8892b0f1fc122bc7f5d74df2b9441a42a14695;
 		
 		// // time delay (ns)
-		#160
+		#3000
 
 		// End testbench
 		$finish;

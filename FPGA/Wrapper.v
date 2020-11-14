@@ -36,23 +36,23 @@ module Wrapper(clock, reset, led);
     wire [639:0] blockHeader;
 
     // Changing 100 MHz clock to 60 MHz
-    reg mineClock = 1;
-    integer mineCounter = 0;
-    always @(posedge clock) begin
-      if(mineCounter == 3) begin
-         mineCounter = 1;
-         mineClock = ~mineClock;
-      end else begin
-         mineCounter = mineCounter + 1;
-      end
-    end
+    // reg mineClock = 0;
+    // integer mineCounter = 0;
+    // always @(posedge clock) begin
+    //   if(mineCounter == 2) begin
+    //      mineCounter = 0;
+    //      mineClock = ~mineClock;
+    //   end else begin
+    //      mineCounter = mineCounter + 1;
+    //   end
+    // end
 
     // Changing 100 MHz clock to 20 MHz
-    reg procClock = 1;
+    reg procClock = 0;
     integer procCounter = 0;
     always @(posedge clock) begin
-      if(procCounter == 18) begin
-         procCounter = 1;
+      if(procCounter == 2) begin
+         procCounter = 0;
          procClock = ~procClock;
       end else begin
          procCounter = procCounter + 1;
@@ -76,10 +76,11 @@ module Wrapper(clock, reset, led);
 
       ///// minerControl 
                   .nonce(nonce),
-                  .hashSuccess(hashSuccess));
+                  .hashSuccess(hashSuccess),
+                  .resetMine(resetMine));
                   
     ///// Instruction Memory (ROM)
-    ROM #(.MEMFILE("")) // Add your memory file here
+    ROM #(.MEMFILE("testMine.mem")) // Add your memory file here
     InstMem(.clk(procClock), 
             .wEn(1'b0), 
             .addr(instAddr[11:0]), 
@@ -100,14 +101,18 @@ module Wrapper(clock, reset, led);
             .dataIn(memDataIn), 
             .dataOut(memDataOut));
 
+    // assign hashSuccess = 1'b0;
+    // assign nonce = 32'h42a14695;
+
     ///// Mining Operation
-    assign nonce = 32'h42a14695;
+    // assign nonce = 32'h42a14695;
     assign blockHeader = 640'h0100000081cd02ab7e569e8bcd9317e2fe99f2de44d49ab2b8851ba4a308000000000000e320b6c2fffc8d750423db8b1eb942ae710e951ed797f7affc8892b0f1fc122bc7f5d74df2b9441a42a14695;
     minerControl mineTime(.blockHeader(blockHeader),
                           .satisfactoryHash(outHash),
-                          .clock(mineClock),
+                          .clock(clock),
                           .ledControl(led),
                           .nonce(nonce),
-                          .hashSuccess(hashSuccess));
+                          .hashSuccess(hashSuccess),
+                          .reset(resetMine));
 
 endmodule

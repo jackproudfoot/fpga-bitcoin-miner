@@ -43,8 +43,12 @@ module processor(
 
     // minerControl
     nonce,                          // O: Nonce value for minerControl
-    hashSuccess                     // I: Sucessful hash bit flag
-     
+    resetMine,                      // O: Resets Miner Control
+    hashSuccess,                    // I: Sucessful hash bit flag
+
+    // Send                         // O: Control signal for serial core
+    timeToSend
+
     );
 
     // Control signals
@@ -66,8 +70,12 @@ module processor(
     input [31:0] data_readRegA, data_readRegB;
 
     // minerControl
+    output resetMine;
     output [31:0] nonce;
     input hashSuccess;
+
+    // Send
+    output timeToSend;
 
     /* YOUR CODE STARTS HERE */
 
@@ -93,7 +101,8 @@ module processor(
     wire [31:0] bypassRSMW, rsDataBy, bypassRTMW, rtDataBy;
 
     // Wires for bitcoin mining
-    wire timeToMine;
+    wire timeToMine, goodHash;
+    wire [31:0] data_resultMine1, data_resultMine2;
 
     // Wires for ALU
     wire overflow, isNotEqual, isLessThan, rtrdSelect, immedCheck, isImmLoadStore, isBranching, isBLT;
@@ -305,7 +314,7 @@ module processor(
     assign multDivOngoing = multOngoing | divOngoing;
 
     // MULT/DIV unit
-    multdiv md(rsDataBy, rtDataBy, ctrl_MULT, ctrl_DIV, clock, data_resultMD, data_exception, data_resultRDY);
+    multdivBehave md(rsDataBy, rtDataBy, ctrl_MULT, ctrl_DIV, clock, data_resultMD, data_exception, data_resultRDY);
 
     // Set overflow flags for MultDiv
     assign multExecption = (data_exception & (opCodeALU == 5'b00110) & (opCodeDX == 5'b00000));
@@ -334,11 +343,18 @@ module processor(
     assign isJumpAndLink = (opCodeDX == 5'b00011);
 
     // Determine if a call to minerControl is occuring
-    assign timeToMine = (opCodeDX == 5'b11111);   
+    assign timeToMine = (opCodeDX == 5'b11111);
+    assign resetMine = timeToMine;
+
+    // Set Send Signal high if a send instruction is called
+    assign timeToSend = (opCodeDX == 5'b11110);
+
+    // Hold value of hashSuccess for 1 processor clock cycle
+    dffe_ref hashSuc(goodHash, hashSuccess, ~clock, hashSuccess, reset);   
 
     // Chose 1 if hashSuccess is high
     assign data_resultMine1 = timeToMine ? 32'b0 : data_resultALU;
-    assign data_resultMine2 = hashSuccess ? 32'b1 : data_resultMine1;
+    assign data_resultMine2 = goodHash ? 32'b1 : data_resultMine1;
 
     // Chose PC + 1 to be output of execute if JAL instruction is called
     assign data_resultJumps = isJumpAndLink ? PCoutDX : data_resultMine2;
@@ -399,13 +415,14 @@ module processor(
     assign isMine = instrOutMW[31:27] == 5'b11111;
 
     // Chose value to go into $rd
-    assign dataWriteTemp = hashSuccess ? 32'b1 : aluToWrite;
-    assign data_writeReg = isLoad ? memToWrite : dataWriteTemp;
+    //assign dataWriteTemp = goodHash ? 32'b1 : aluToWrite;
+    assign data_writeReg = isLoad ? memToWrite : aluToWrite;
 
     // Set writeEnable to high for addi, LW, JAL, and R-type instructions
     assign ctrl_writeEnable = (instrOutMW[31:27] == 5'b00101) |
                               (instrOutMW[31:27] == 5'b01000) | 
                               (instrOutMW[31:27] == 5'b00000) |
+                              (instrOutMW[31:27] == 5'b11111) |
                               (instrOutMW[31:27] == 5'b00011);
 
 
