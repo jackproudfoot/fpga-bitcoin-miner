@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 module uart_wrapper(fpga_clock, reset, rxd, txd, ca, an, transmit_data, display_toggle);
-    input fpga_clock, reset, transmit_data, display_toggle;
+    input fpga_clock, reset, nonce_we, transmit_data, display_toggle;
 
     input rxd;
     output txd;
@@ -26,7 +26,7 @@ module uart_wrapper(fpga_clock, reset, rxd, txd, ca, an, transmit_data, display_
 
 
     wire [31:0] display_data;
-    assign display_data = display_toggle ? header_data[639:608] : header_data[31:0];
+    assign display_data = display_toggle ? header_data[31:0] : header_data[639:608];
 
     seven_segment display(ca, an, display_data, fpga_clock);
 
