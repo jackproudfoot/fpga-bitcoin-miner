@@ -30,8 +30,17 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
     end
 
 
-    uart serial_module(clock, reset, rxd, txd, txce, tx, rxce, rx, is_receiving, is_transmitting, error);
+    //uart serial_module(clock, reset, rxd, txd, txce, tx, rxce, rx, is_receiving, is_transmitting, error);
 
+    uart uart_module(.din(tx),
+	       .wr_en(txce),
+	       .clk_50m(clock),
+	       .tx(txd),
+	       .tx_busy(is_transmitting),
+	       .rx(rxd),
+	       .rdy(rxce),
+	       .rdy_clr(reset),
+	       .dout(rx));
    
     wire [639:0] header_data;
 
