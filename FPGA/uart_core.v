@@ -32,6 +32,8 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
 
     //uart serial_module(clock, reset, rxd, txd, txce, tx, rxce, rx, is_receiving, is_transmitting, error);
 
+    reg rdy_clr = 0;
+
     uart uart_module(.din(tx),
 	       .wr_en(txce),
 	       .clk_50m(clock),
@@ -39,8 +41,17 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
 	       .tx_busy(is_transmitting),
 	       .rx(rxd),
 	       .rdy(rxce),
-	       .rdy_clr(clock),
+	       .rdy_clr(rdy_clr),
 	       .dout(rx));
+
+    always @(posedge clock) begin
+        if (rxce) begin
+            rdy_clr <= 1'b1;
+        end
+        else begin
+            rdy_clr <= 1'b0;
+        end
+    end
    
     wire [639:0] header_data;
 
@@ -49,7 +60,7 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
     shift_reg #(
         .INPUT_WIDTH(HEADER_REG_INPUT_WIDTH),
         .DATA_WIDTH(HEADER_REG_DATA_WIDTH)
-    ) header_reg (header_data, rx, clock, rxce, 1'b0, reset);
+    ) header_reg (header_data, rx, rxce, rxce, 1'b0, reset);
 
     wire [31:0] nonce_data;
     reg shift_nonce = 0;
