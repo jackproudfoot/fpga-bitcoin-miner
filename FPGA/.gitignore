@@ -4,4 +4,4 @@
 !Makefile
 !*.xdc
 !*.vhd
-!uart_module/*
+!uart_module/
