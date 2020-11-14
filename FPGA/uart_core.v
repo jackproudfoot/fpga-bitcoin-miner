@@ -74,26 +74,33 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
     always @(posedge clock) begin
         if (debounce == 99999999) begin
             if (transmit && ~is_receiving) begin
-            if (bytesToSend > 0) begin
-                tx <= nonce_data[31:24];
-                txce <= 1'b1;
+                if (bytesToSend > 0) begin
+                    if (~is_transmitting) begin
+                        tx <= nonce_data[31:24];
+                        txce <= 1'b1;
 
-                shift_nonce <= 1'b1;
+                        shift_nonce <= 1'b1;
 
-                bytesToSend = bytesToSend - 1;
-            end
-            else if (bytesToSend == 0) begin
-                done_transmitting <= 1'b1;
-                txce <= 1'b0;
+                        bytesToSend = bytesToSend - 1;
+                    end else begin
+                        txce <= 1'b0;
 
-                bytesToSend = 4;
+                        shift_nonce <= 1'b0;
+                    end
+                end
+                else if (bytesToSend == 0) begin
+                    done_transmitting <= 1'b1;
+                    txce <= 1'b0;
 
-                shift_nonce <= 1'b0;
-            end
+                    bytesToSend = 4;
+
+                    shift_nonce <= 1'b0;
+                end
             end else begin
                 txce <= 1'b0;
                 done_transmitting <= 1'b0;
                 debounce = 0;
+                shift_nonce <= 1'b0;
             end
             
         end else if (debounce < 99999999) begin
