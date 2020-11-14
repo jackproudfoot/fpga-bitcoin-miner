@@ -26,6 +26,16 @@ module uart_tb();
 		transmit_data <= 0;
 
         #100000
+		
+		nonce_we <= 1'b1;
+		#20
+		nonce_we <= 1'b0;
+		#40
+		transmit_data <= 1;
+		#20
+		transmit_data <= 0;
+
+        #100000
 
 		// End testbench
 		$finish;
