@@ -8,18 +8,13 @@ module uart_tb();
 	wire [7:0] ca, an;
 
 	reg [31:0] nonce = 32'h12345678;
-	reg nonce_we, transmit_data = 0;
+	reg transmit_data = 0;
 
 	// Module to test
-	uart_wrapper test_wrapper(clock, reset, rxd, txd, ca, an, nonce_we, transmit_data, display_toggle);
+	uart_wrapper test_wrapper(clock, reset, rxd, txd, ca, an, transmit_data, display_toggle);
 
 	// Give inputs and runtime
 	initial begin
-		nonce_we <= 1'b0;
-        #20
-		nonce_we <= 1'b1;
-		#20
-		nonce_we <= 1'b0;
 		#40
 		transmit_data <= 1;
 		#20
@@ -27,9 +22,6 @@ module uart_tb();
 
         #100000
 
-		nonce_we <= 1'b1;
-		#20
-		nonce_we <= 1'b0;
 		#40
 		transmit_data <= 1;
 		#20

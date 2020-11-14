@@ -1,16 +1,17 @@
 `timescale 1ns/10ps
  
-module uart_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data);
+module uart_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data, rxce);
 
     input [31:0] nonce_input;
     input transmit_data;
 
     input clock, reset, rxd;
-    output txd;
+    output txd, received_data;
 
     output [639:0] header_data;
+    output rxce;
 
-    wire rxce, is_transmitting;
+    wire is_transmitting;
 
     reg txce;
 
@@ -58,16 +59,16 @@ module uart_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data
         transmit_clock = ~transmit_clock;
     end
 
+    wire transmit;
+    edge_detector transmit_edge_detector(transmit_clock, transmit_data, transmit);
+
+
     localparam NONCE_REG_INPUT_WIDTH = 32;
     localparam NONCE_REG_DATA_WIDTH = 32;
     shift_reg #(
         .INPUT_WIDTH(NONCE_REG_INPUT_WIDTH),
         .DATA_WIDTH(NONCE_REG_DATA_WIDTH)
-    ) nonce_reg (nonce_data, nonce_input, transmit_clock, transmit_data, shift_nonce, reset);
-
-
-    wire transmit;
-    edge_detector transmit_edge_detector(transmit_clock, transmit_data, transmit);
+    ) nonce_reg (nonce_data, nonce_input, transmit_clock, transmit, shift_nonce, reset);
 
     
     integer bytesToSend = 0;

@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
-module uart_wrapper(fpga_clock, reset, rxd, txd, ca, an, nonce_we, transmit_data, display_toggle);
-    input fpga_clock, reset, nonce_we, transmit_data, display_toggle;
+module uart_wrapper(fpga_clock, reset, rxd, txd, ca, an, transmit_data, display_toggle);
+    input fpga_clock, reset, transmit_data, display_toggle;
 
     input rxd;
     output txd;
@@ -20,8 +20,9 @@ module uart_wrapper(fpga_clock, reset, rxd, txd, ca, an, nonce_we, transmit_data
     assign nonce_input = 32'h12345678;
 
     wire [639:0] header_data;
+    wire rxce;
 
-    uart_core serial_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data);
+    uart_core serial_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data, rxce);
 
 
     wire [31:0] display_data;
