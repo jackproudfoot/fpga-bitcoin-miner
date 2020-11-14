@@ -1,8 +1,8 @@
 `timescale 1ns/10ps
  
-module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_input, nonce_we, transmit_data, display_toggle, error);
+module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, display_toggle, error);
 
-    input [31:0] nonce_input;
+    //input [31:0] nonce_input;
     input nonce_we, transmit_data;
 
     input display_toggle;
@@ -40,15 +40,15 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_input, nonce_we, tra
     shift_reg #(
         .INPUT_WIDTH(HEADER_REG_INPUT_WIDTH),
         .DATA_WIDTH(HEADER_REG_DATA_WIDTH)
-    ) header_reg (header_data, rx, ~clock, rxce, 1'b0, reset);
+    ) header_reg (header_data, rx, rxce, rxce, 1'b0, reset);
 
 
 
     wire [31:0] nonce_data;
     reg shift_nonce = 0;
 
-    // wire [31:0] nonce_input;
-    // assign nonce_input = 32'h12345678;
+    wire [31:0] nonce_input;
+    assign nonce_input = 32'h12345678;
 
     localparam NONCE_REG_INPUT_WIDTH = 32;
     localparam NONCE_REG_DATA_WIDTH = 32;
@@ -93,9 +93,9 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_input, nonce_we, tra
             end else begin
                 txce <= 1'b0;
                 done_transmitting <= 1'b0;
+                debounce = 0;
             end
-
-            debounce = 0;
+            
         end else if (debounce < 99999999) begin
             debounce = debounce + 1;
         end
