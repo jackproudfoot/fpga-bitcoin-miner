@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 module uart_wrapper(fpga_clock, reset, rxd, txd, ca, an, transmit_data, display_toggle);
-    input fpga_clock, reset, nonce_we, transmit_data, display_toggle;
+    input fpga_clock, reset, transmit_data, display_toggle;
 
     input rxd;
     output txd;
