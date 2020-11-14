@@ -107,14 +107,20 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
     end
 
     
-    reg [31:0] bytesRecieved = 0;
+    reg [15:0] bytesRecieved = 0;
     always @(posedge rxce) begin
         bytesRecieved = bytesRecieved + 1;
     end
 
+    reg [15:0] frameErrors = 0;
+    always @(posedge error) begin
+        frameErrors = frameErrors + 1;
+    end
+
+
     wire [31:0] display_data;
     // assign display_data = display_toggle ? header_data[639:608] : nonce_data[31:0];
-    assign display_data = display_toggle ? header_data[639:608] : bytesRecieved[31:0];
+    assign display_data = display_toggle ? header_data[639:608] : {frameErrors, bytesRecieved};
 
     seven_segment display(ca, an, display_data, fpga_clock);
 
