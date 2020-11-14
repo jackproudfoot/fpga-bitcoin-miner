@@ -107,6 +107,9 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
             else begin
                 txce <= 1'b0;
                 shift_nonce <= 1'b0;
+
+                bytesToSend = 0;
+                trans_ongoing <= 1'b0;
             end
         end else if (!is_transmitting) begin
             if (bytesToSend > 1) begin
@@ -128,11 +131,15 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
                 txce <= 1'b0;
                 shift_nonce <= 1'b0;
                 trans_ongoing <= 1'b0;
+
+                bytesToSend = 0;
             end
         end
         else begin
             txce <= 1'b0;
             shift_nonce <= 1'b0;
+
+            bytesToSend = 0;
         end
 
         
