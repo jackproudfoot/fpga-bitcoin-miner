@@ -42,8 +42,6 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
         .DATA_WIDTH(HEADER_REG_DATA_WIDTH)
     ) header_reg (header_data, rx, rxce, rxce, 1'b0, reset);
 
-
-
     wire [31:0] nonce_data;
     reg shift_nonce = 0;
 
@@ -109,10 +107,14 @@ module uart_core(fpga_clock, reset, txd, rxd, ca, an, nonce_we, transmit_data, d
     end
 
     
-
+    reg [31:0] bytesRecieved = 0;
+    always @(posedge rxce) begin
+        bytesRecieved = bytesRecieved + 1;
+    end
 
     wire [31:0] display_data;
-    assign display_data = display_toggle ? header_data[639:608] : nonce_data[31:0];
+    // assign display_data = display_toggle ? header_data[639:608] : nonce_data[31:0];
+    assign display_data = display_toggle ? header_data[639:608] : bytesRecieved[31:0];
 
     seven_segment display(ca, an, display_data, fpga_clock);
 
