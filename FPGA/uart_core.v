@@ -86,7 +86,7 @@ module uart_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data
                 trans_ongoing <= 1'b1;
 
                 txce <= 1'b1;
-                tx <= nonce_data[31:24];
+                tx <= nonce_input[31:24];
                 shift_nonce <= 1'b0;
             end
             else begin

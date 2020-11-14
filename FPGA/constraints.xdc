@@ -12,7 +12,6 @@ create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports {fp
 set_property -dict { PACKAGE_PIN M18   IOSTANDARD LVCMOS33 } [get_ports { reset }];
 
 set_property -dict { PACKAGE_PIN N17   IOSTANDARD LVCMOS33 } [get_ports { display_toggle }];
-set_property -dict { PACKAGE_PIN P18   IOSTANDARD LVCMOS33 } [get_ports { nonce_we }];
 set_property -dict { PACKAGE_PIN P17   IOSTANDARD LVCMOS33 } [get_ports { transmit_data }];
 
 ## LEDS
