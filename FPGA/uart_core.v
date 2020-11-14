@@ -6,7 +6,7 @@ module uart_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data
     input transmit_data;
 
     input clock, reset, rxd;
-    output txd, received_data;
+    output txd;
 
     output [639:0] header_data;
     output rxce;
