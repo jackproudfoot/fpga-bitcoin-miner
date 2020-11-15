@@ -41,19 +41,19 @@ module Wrapper(clock, reset, led, ca, an);
     wire [31:0] nonceIn;
     assign nonceIn = 32'h42A14693;
 
-    // Changing 100 MHz clock to 60 MHz
-    reg mineClock = 0;
-    integer mineCounter = 0;
-    always @(posedge clock) begin
-      if(mineCounter == 2) begin
-         mineCounter = 0;
-         mineClock = ~mineClock;
-      end else begin
-         mineCounter = mineCounter + 1;
-      end
-    end
+     // Changing 100 MHz clock to 33.3 MHz
+     reg mineClock = 0;
+     integer mineCounter = 0;
+     always @(posedge clock) begin
+       if(mineCounter == 2) begin
+          mineCounter = 0;
+          mineClock = ~mineClock;
+       end else begin
+          mineCounter = mineCounter + 1;
+       end
+     end
 
-    // Changing 100 MHz clock to ? MHz
+    // Changing 33.3 MHz clock to 11.1 MHz
     reg procClock = 0;
     integer procCounter = 0;
     always @(posedge mineClock) begin
@@ -68,15 +68,15 @@ module Wrapper(clock, reset, led, ca, an);
     ///// Main Processing Unit
     processor CPU(.clock(procClock), .reset(reset), 
                   
-		  ///// ROM
+      ///// ROM
                   .address_imem(instAddr), .q_imem(instData),
                   
-		  ///// Regfile
+      ///// Regfile
                   .ctrl_writeEnable(rwe),     .ctrl_writeReg(rd),
                   .ctrl_readRegA(rs1),     .ctrl_readRegB(rs2), 
                   .data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB),
                   
-		  ///// RAM
+      ///// RAM
                   .wren(mwe), .address_dmem(memAddr), 
                   .data(memDataIn), .q_dmem(memDataOut),
 
