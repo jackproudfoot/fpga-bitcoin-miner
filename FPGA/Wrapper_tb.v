@@ -6,8 +6,10 @@ module Wrapper_tb();
 	wire txd;
 	reg rxd = 0;
 
+	reg display_toggle = 1'b0;
+
 	// Module to test
-	Wrapper processor(clk, reset, ca, an, txd, rxd);
+	Wrapper processor(clk, reset, ca, an, txd, rxd, display_toggle);
 
 	// Give inputs and runtime
 	initial begin

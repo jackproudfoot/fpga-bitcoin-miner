@@ -20,7 +20,7 @@
  *
  **/
 
-module Wrapper(clock, reset, ca, an, txd, rxd);
+module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
     input clock, reset;
     output [7:0] ca, an;
 
@@ -42,6 +42,8 @@ module Wrapper(clock, reset, ca, an, txd, rxd);
 
     input rxd;
     output txd;
+
+    input display_toggle;
 
     wire timeToSend;
     wire rxce;
@@ -139,7 +141,12 @@ module Wrapper(clock, reset, ca, an, txd, rxd);
     uart_core serial_core(clock, reset, rxd, txd, nonce, timeToSend, blockHeader, rxce);
 
     ///// Seven Segment Display
+
     reg32 goodNonce(finalNonce, nonce, clock, hashSuccess, 1'b0);
-    seven_segment disp(.ca(ca), .an(an), .data(finalNonce), .clock(clock));
+    
+    wire [31:0] seven_segment_data;
+    assign seven_segment_data [31:0] = display_toggle ? blockHeader[639:608] : finalNonce;
+    
+    seven_segment disp(.ca(ca), .an(an), .data(seven_segment_data), .clock(clock));
 
 endmodule
