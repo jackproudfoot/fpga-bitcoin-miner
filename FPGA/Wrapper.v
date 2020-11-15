@@ -43,7 +43,7 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
     input rxd;
     output txd;
 
-    input display_toggle;
+    input [1:0] display_toggle;
 
     wire timeToSend;
     wire rxce;
@@ -145,7 +145,7 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
     reg32 goodNonce(finalNonce, nonce, clock, hashSuccess, 1'b0);
     
     wire [31:0] seven_segment_data;
-    assign seven_segment_data [31:0] = display_toggle ? blockHeader[639:608] : finalNonce;
+    assign seven_segment_data [31:0] = display_toggle[0] ? blockHeader[639:608] : display_toggle[1] ? nonce : finalNonce;
     
     seven_segment disp(.ca(ca), .an(an), .data(seven_segment_data), .clock(clock));
 
