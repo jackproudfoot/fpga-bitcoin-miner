@@ -159,8 +159,8 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
     reg32 goodNonce(finalNonce, nonce, ~clock, hashFound, procReset);
     
     wire [31:0] seven_segment_data;
-    //assign seven_segment_data [31:0] = display_toggle[0] ? blockHeader[639:608] : display_toggle[1] ? nonce : display_toggle[2] ? byteCount : display_toggle[3] ? outHash[255:224] : finalNonce;
-    assign seven_segment_data [31:0] = finalNonce[31:0];
+    assign seven_segment_data [31:0] = display_toggle[0] ? blockHeader[639:608] : display_toggle[1] ? nonce : display_toggle[2] ? byteCount : display_toggle[3] ? outHash[255:224] : finalNonce[31:0];
+    //assign seven_segment_data [31:0] = finalNonce[31:0];
 
     seven_segment disp(.ca(ca), .an(an), .data(seven_segment_data), .clock(clock));
 
