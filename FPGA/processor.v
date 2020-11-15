@@ -101,7 +101,8 @@ module processor(
     wire [31:0] bypassRSMW, rsDataBy, bypassRTMW, rtDataBy;
 
     // Wires for bitcoin mining
-    wire timeToMine, goodHash;
+    wire timeToMine, goodHash, restart, hashStall;
+    wire [6:0] hashStallCount;
     wire [31:0] data_resultMine1, data_resultMine2;
 
     // Wires for ALU
@@ -151,7 +152,7 @@ module processor(
     assign PCin = branchTaken ? branchPC : PCMuxTemp;
 
     // Stall if a MULT or a DIV instruction is currently running or if the $rd of a LW is being used as an input in the next cycle
-    assign stallClock = (multDivOngoing | wxStall) ? 1'b0 : 1'b1;
+    assign stallClock = (multDivOngoing | wxStall | hashStall) ? 1'b0 : 1'b1;
     reg32 regPC(PCout, PCin, clock, stallClock, reset);
 
     assign address_imem = PCout[11:0];
@@ -160,13 +161,13 @@ module processor(
 
 
     // Stall if a MULT or a DIV instruction is currently running or if the $rd of a LW is being used as an input in the next cycle
-    assign stallFD = (multDivOngoing | wxStall) ? 1'b0 : 1'b1;
+    assign stallFD = (multDivOngoing | wxStall ) ? 1'b0 : 1'b1;
 
     // No-Op if a jump/branch instruction is currently running
-    assign instrInFD = (isJumping | branchTaken) ? 32'b0 : q_imem;
+    assign instrInFD = (isJumping | branchTaken | hashStall) ? 32'b0 : q_imem;
 
     // Fetch/Decode Register
-    FD fetchDecode(instrInFD, PCplus1, instrOutFD, PCoutFD, clock, stallFD, reset);
+    fetchDecode fDecode(instrInFD, PCplus1, instrOutFD, PCoutFD, clock, stallFD, reset);
                 
     // Use instruction to determine $rd, $rs, and $rt
     assign rs = instrOutFD[21:17];
@@ -193,7 +194,7 @@ module processor(
 
 
     // Stall if a MULT or a DIV instruction is currently running
-    assign stallDX = multDivOngoing ? 1'b0 : 1'b1;
+    assign stallDX = (multDivOngoing | hashStall) ? 1'b0 : 1'b1;
 
     // No-Op if a jump/branch instruction is currently running or if the $rd of a LW is being used as an input in the next cycle
     assign instrInDX = (isJumping | branchTaken | wxStall) ? 32'b0 : instrOutFD;
@@ -270,6 +271,18 @@ module processor(
 
     // Sets nonce in minerControl to the value of $rs
     assign nonce = rsDataBy;
+
+    // Counter for minerControl Module and Stalling
+    always @(posedge clock) begin
+        if(timeToMine) begin
+            restart <= 0;
+        end else begin
+            restart <= 1;
+        end
+    end
+    assign restart = (hashStallCount == 35) & (timeToMine);
+    stallCounter hashCounter(clock, reset, restart, hashStallCount);
+    assign hashStall = timeToMine & (hashStallCount < 35);
 
     // Sign extend immediate and determine if addi instruction is called
     signExtend32 extendImm(extendedImm, immediate);
@@ -367,7 +380,7 @@ module processor(
 
 
     // Stall if a MULT or a DIV instruction is currently running
-    assign stallXM = multDivOngoing ? 1'b0 : 1'b1;
+    assign stallXM = (multDivOngoing | hashStall) ? 1'b0 : 1'b1;
 
     // Execute/Memory Register
     XM executeMemory(instrChange, data_result, rtDataBy, instrOutXM, address_dmem, rdDataOut, clock, stallXM, reset);
@@ -395,7 +408,7 @@ module processor(
     assign instrInMW = instrOutXM;
 
     // Stall if a MULT or a DIV instruction is currently running
-    assign stallMW = multDivOngoing ? 1'b0 : 1'b1;
+    assign stallMW = (multDivOngoing | hashStall) ? 1'b0 : 1'b1;
 
 
     // Memory/Write Registers

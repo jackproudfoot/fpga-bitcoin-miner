@@ -25,7 +25,7 @@ module sevseg_tb();
 	// Toggle clock every 5 ns
 	always begin
 		#500 clk = ~clk;
-		data <= data+1
+		data <= data+1;
 	end
 
 	initial begin
