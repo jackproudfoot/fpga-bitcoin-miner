@@ -43,7 +43,7 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
     input rxd;
     output txd;
 
-    input [2:0] display_toggle;
+    input [3:0] display_toggle;
 
     wire timeToSend;
     wire rxce;
@@ -52,7 +52,7 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
     saturating_counter satcount(rxce_sat, rxce, clock);
     assign procReset = reset | rxce_sat;
 
-    //Changing 100 MHz clock to 16.7 MHz
+    //Changing 100 MHz clock to 33.3 MHz
     reg mineClock = 0;
     integer mineCounter = 0;
     always @(posedge clock) begin
@@ -64,7 +64,7 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
       end
     end
 
-    // Changing 16.7 MHz to 2.777 Mhz
+    // Changing 33.3 MHz to 11.1 Mhz
     reg procClock = 0;
     integer procCounter = 0;
     always @(posedge mineClock) begin
@@ -145,14 +145,14 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
 
     //// Serial UART Core
     wire [31:0] byteCount;
-    uart_core serial_core(clock, reset, rxd, txd, nonce, timeToSend, blockHeader, rxce, byteCount);
+    uart_core serial_core(uartClock, reset, rxd, txd, nonce, timeToSend, blockHeader, rxce, byteCount);
 
     ///// Seven Segment Display
 
     reg32 goodNonce(finalNonce, nonce, clock, hashSuccess, 1'b0);
     
     wire [31:0] seven_segment_data;
-    assign seven_segment_data [31:0] = display_toggle[0] ? blockHeader[639:608] : display_toggle[1] ? nonce : display_toggle[2] ? byteCount : finalNonce;
+    assign seven_segment_data [31:0] = display_toggle[0] ? blockHeader[639:608] : display_toggle[1] ? nonce : display_toggle[2] ? byteCount : display_toggle[3] ? outHash[255:224] : finalNonce;
     
     seven_segment disp(.ca(ca), .an(an), .data(seven_segment_data), .clock(clock));
 

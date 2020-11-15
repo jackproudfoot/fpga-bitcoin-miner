@@ -122,7 +122,8 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 	assign hashCheck = ((difficulty > hashToCheck) & (finalHash) & (cycle_counter == 64));
 	dffe_ref goodHash(hashSuccess, hashCheck, ~clock, 1'b1, 1'b0);
 
-	assign satisfactoryHash = hashSuccess ? shaReturn : 256'b0;
+	//assign satisfactoryHash = hashSuccess ? shaReturn : 256'b0;
+	assign satisfactoryHash = shaReturn;
 
 	dffe_ref ledDFF(ledControl, hashSuccess, clock, hashSuccess, 1'b0);
 
