@@ -1,8 +1,8 @@
 module stallCounter(clock, reset, restart, outCount);
 	input clock, reset, restart;
-	output reg [0:6] outCount = 356;
+	output reg [0:6] outCount = 35;
 
-	always @(posedge clock or posedge reset) begin
+	always @(posedge clock or posedge reset or posedge restart) begin
 		if (reset) begin 
 			outCount <= 35;
 		end

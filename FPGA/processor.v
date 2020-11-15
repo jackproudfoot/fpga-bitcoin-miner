@@ -161,10 +161,10 @@ module processor(
 
 
     // Stall if a MULT or a DIV instruction is currently running or if the $rd of a LW is being used as an input in the next cycle
-    assign stallFD = (multDivOngoing | wxStall ) ? 1'b0 : 1'b1;
+    assign stallFD = (multDivOngoing | wxStall | hashStall) ? 1'b0 : 1'b1;
 
     // No-Op if a jump/branch instruction is currently running
-    assign instrInFD = (isJumping | branchTaken | hashStall) ? 32'b0 : q_imem;
+    assign instrInFD = (isJumping | branchTaken) ? 32'b0 : q_imem;
 
     // Fetch/Decode Register
     fetchDecode fDecode(instrInFD, PCplus1, instrOutFD, PCoutFD, clock, stallFD, reset);
@@ -273,9 +273,9 @@ module processor(
     assign nonce = rsDataBy;
 
     // Counter for minerControl Module and Stalling
-    assign restart = (hashStallCount == 35) & (timeToMine);
+    assign restart = (hashStallCount > 33) & (timeToMine);
     stallCounter hashCounter(clock, reset, restart, hashStallCount);
-    assign hashStall = timeToMine & (hashStallCount < 35);
+    assign hashStall = (timeToMine & (hashStallCount < 32)) | restart;
 
     // Sign extend immediate and determine if addi instruction is called
     signExtend32 extendImm(extendedImm, immediate);
