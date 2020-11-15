@@ -221,7 +221,7 @@ module SHA256(inputSchedule, hashedValue, clock,
 	assign hashFinal3 = hash3In + state_out63[127:96];
 	assign hashFinal4 = hash4In + state_out63[159:128];
 	assign hashFinal5 = hash5In + state_out63[191:160];
-	assign hashFinal6 = hash6In + state_out63[191:160];
+	assign hashFinal6 = hash6In + state_out63[223:192];
 	assign hashFinal7 = hash7In + state_out63[255:224];
 
 
