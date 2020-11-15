@@ -17,8 +17,9 @@
   },
   "homepage": "https://github.com/jackproudfoot/fpga-bitcoin-miner#readme",
   "dependencies": {
-    "crytpo-js": "0.0.1-security",
+    "crypto-js": "^4.0.0",
     "merkletreejs": "^0.2.9",
+    "serialport": "^9.0.2",
     "stratum-client": "^1.1.0"
   }
 }
