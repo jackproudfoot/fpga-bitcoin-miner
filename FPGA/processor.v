@@ -273,14 +273,10 @@ module processor(
     assign nonce = rsDataBy;
 
     // Counter for minerControl Module and Stalling
-    always @(posedge clock) begin
-        if(timeToMine) begin
-            restart <= 0;
-        end else begin
-            restart <= 1;
-        end
-    end
-    assign restart = (hashStallCount == 35) & (timeToMine);
+    
+    edge_detector detect_timetomine(clock, timeToMine, restart);
+
+    //assign restart = (hashStallCount == 35) & (timeToMine);
     stallCounter hashCounter(clock, reset, restart, hashStallCount);
     assign hashStall = timeToMine & (hashStallCount < 35);
 
