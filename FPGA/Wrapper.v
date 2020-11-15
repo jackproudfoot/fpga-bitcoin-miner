@@ -48,17 +48,25 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
     wire timeToSend;
     wire rxce;
 
-    //Changing 100 MHz clock to 33.3 MHz
-    reg mineClock = 0;
-    integer mineCounter = 0;
+    //Changing 100 MHz clock to 50 MHz
+    reg uartClock = 0;
     always @(posedge clock) begin
-      if(mineCounter == 2) begin
-         mineCounter = 0;
-         mineClock = ~mineClock;
-      end else begin
-         mineCounter = mineCounter + 1;
-      end
+        uartClock = ~uartClock;
     end
+
+    //Changing 100 MHz clock to 33.3 MHz
+    //reg mineClock = 0;
+    wire mineClock;
+    assign mineClock = uartClock;
+//     integer mineCounter = 0;
+//     always @(posedge clock) begin
+//       if(mineCounter == 2) begin
+//          mineCounter = 0;
+//          mineClock = ~mineClock;
+//       end else begin
+//          mineCounter = mineCounter + 1;
+//       end
+//     end
 
     // Changing 33.3 MHz to 11.1 Mhz
     reg procClock = 0;
@@ -70,12 +78,6 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
       end else begin
          procCounter = procCounter + 1;
       end
-    end
-
-    //Changing 100 MHz clock to 50 MHz
-    reg uartClock = 0;
-    always @(posedge clock) begin
-        uartClock = ~uartClock;
     end
     
     wire procReset, rxce_sat, reset_sat;
