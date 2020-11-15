@@ -1,4 +1,4 @@
-.DEFAULT_GOAL := miner
+.DEFAULT_GOAL := sha
 
 miner: module
 	@iverilog -o miner -c module.txt -s minerControl_tb
