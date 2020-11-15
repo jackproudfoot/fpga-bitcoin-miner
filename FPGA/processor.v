@@ -45,9 +45,10 @@ module processor(
     nonce,                          // O: Nonce value for minerControl
     resetMine,                      // O: Resets Miner Control
     hashSuccess,                    // I: Sucessful hash bit flag
-
-    // Send                         // O: Control signal for serial core
-    timeToSend
+    
+    // SerialCore
+    timeToSend,                     // O: Control signal for serial core
+    nonceIn                         // I: Nonce input from serial core
 
     );
 
@@ -76,6 +77,7 @@ module processor(
 
     // Send
     output timeToSend;
+    input [31:0] nonceIn;
 
     /* YOUR CODE STARTS HERE */
 
@@ -104,6 +106,8 @@ module processor(
     wire timeToMine, goodHash, restart, hashStall;
     wire [6:0] hashStallCount;
     wire [31:0] data_resultMine1, data_resultMine2;
+    wire grabNonce, storeNonce;
+    wire [31:0] execute_inject;
 
     // Wires for ALU
     wire overflow, isNotEqual, isLessThan, rtrdSelect, immedCheck, isImmLoadStore, isBranching, isBLT;
@@ -199,8 +203,10 @@ module processor(
     // No-Op if a jump/branch instruction is currently running or if the $rd of a LW is being used as an input in the next cycle
     assign instrInDX = (isJumping | branchTaken | wxStall) ? 32'b0 : instrOutFD;
 
+    assign execute_inject = grabNonce ? nonceIn : data_readRegA;
+
     // Decode/Execute Register
-    DX decodeExecute(instrInDX, PCoutFD, data_readRegA, data_readRegB, ctrl_readRegB, rsData, rtData, rtrd, instrOutDX, PCoutDX, clock, stallDX, reset);
+    DX decodeExecute(instrInDX, PCoutFD, execute_inject, data_readRegB, ctrl_readRegB, rsData, rtData, rtrd, instrOutDX, PCoutDX, clock, stallDX, reset);
     
     // Use instruction to determine ALU steps
     assign opCodeDX = instrOutDX[31:27];
@@ -355,6 +361,10 @@ module processor(
     // Set Send Signal high if a send instruction is called
     assign timeToSend = (opCodeDX == 5'b11110);
 
+    // Set load nonce if a load nonce is called
+    assign grabNonce = (instrOutFD[31:27] == 5'b11100);
+    assign storeNonce = (instrOutMW[31:27] == 5'b11100);
+
     // Hold value of hashSuccess for 1 processor clock cycle
     dffe_ref hashSuc(goodHash, hashSuccess, ~clock, hashSuccess, reset);   
 
@@ -429,7 +439,8 @@ module processor(
                               (instrOutMW[31:27] == 5'b01000) | 
                               (instrOutMW[31:27] == 5'b00000) |
                               (instrOutMW[31:27] == 5'b11111) |
-                              (instrOutMW[31:27] == 5'b00011);
+                              (instrOutMW[31:27] == 5'b00011) |
+                              storeNonce;
 
 
     /* END CODE */

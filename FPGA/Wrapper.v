@@ -38,6 +38,9 @@ module Wrapper(clock, reset, led, ca, an);
 
     wire [31:0] finalNonce;
 
+    wire [31:0] nonceIn;
+    assign nonceIn = 32'h42A14693;
+
     // Changing 100 MHz clock to 60 MHz
     // reg mineClock = 0;
     // integer mineCounter = 0;
@@ -82,7 +85,8 @@ module Wrapper(clock, reset, led, ca, an);
                   .hashSuccess(hashSuccess),
                   .resetMine(resetMine),
       ///// Send
-                  .timeToSend(timeToSend));
+                  .timeToSend(timeToSend),
+                  .nonceIn(nonceIn));
                   
     ///// Instruction Memory (ROM)
     ROM #(.MEMFILE("testMine.mem")) // Add your memory file here
