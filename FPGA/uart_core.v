@@ -26,9 +26,15 @@ module uart_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data
 
     reg rdy_clr = 0;
 
+    reg transmit_clock = 0;
+    always @(posedge clock) begin
+        transmit_clock = ~transmit_clock;
+    end
+
+
     uart uart_module(.din(tx),
 	       .wr_en(txce),
-	       .clk_50m(clock),
+	       .clk_50m(transmit_clock),
 	       .tx(txd),
 	       .tx_busy(is_transmitting),
 	       .rx(rxd),
@@ -56,16 +62,11 @@ module uart_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data
     always @(posedge rxce) begin
         byteCount <= byteCount + 1;
     end
-    
+
 
     wire [31:0] nonce_data;
     reg shift_nonce = 0;
 
-
-    reg transmit_clock = 0;
-    always @(posedge clock) begin
-        transmit_clock = ~transmit_clock;
-    end
 
     wire transmit;
     edge_detector transmit_edge_detector(transmit_clock, transmit_data, transmit);
