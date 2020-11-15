@@ -42,21 +42,21 @@ module Wrapper(clock, reset, led, ca, an);
     assign nonceIn = 32'h42A14693;
 
     // Changing 100 MHz clock to 60 MHz
-    // reg mineClock = 0;
-    // integer mineCounter = 0;
-    // always @(posedge clock) begin
-    //   if(mineCounter == 2) begin
-    //      mineCounter = 0;
-    //      mineClock = ~mineClock;
-    //   end else begin
-    //      mineCounter = mineCounter + 1;
-    //   end
-    // end
+    reg mineClock = 0;
+    integer mineCounter = 0;
+    always @(posedge clock) begin
+      if(mineCounter == 2) begin
+         mineCounter = 0;
+         mineClock = ~mineClock;
+      end else begin
+         mineCounter = mineCounter + 1;
+      end
+    end
 
     // Changing 100 MHz clock to ? MHz
     reg procClock = 0;
     integer procCounter = 0;
-    always @(posedge clock) begin
+    always @(posedge mineClock) begin
       if(procCounter == 2) begin
          procCounter = 0;
          procClock = ~procClock;
@@ -114,11 +114,10 @@ module Wrapper(clock, reset, led, ca, an);
     // assign nonce = 32'h42a14695;
 
     ///// Mining Operation
-    // assign nonce = 32'h42a14695;
     assign blockHeader = 640'h0100000081cd02ab7e569e8bcd9317e2fe99f2de44d49ab2b8851ba4a308000000000000e320b6c2fffc8d750423db8b1eb942ae710e951ed797f7affc8892b0f1fc122bc7f5d74df2b9441a42a14695;
     minerControl mineTime(.blockHeader(blockHeader),
                           .satisfactoryHash(outHash),
-                          .clock(clock),
+                          .clock(mineClock),
                           .ledControl(led),
                           .nonce(nonce),
                           .hashSuccess(hashSuccess),
@@ -126,6 +125,6 @@ module Wrapper(clock, reset, led, ca, an);
 
     ///// Seven Segment Display
     reg32 goodNonce(finalNonce, nonce, clock, hashSuccess, 1'b0);
-    seven_segment disp(.ca(ca), .an(an), .data(finalNonce), .clock(clock));
+    seven_segment disp(.ca(ca), .an(an), .data(nonce), .clock(clock));
 
 endmodule
