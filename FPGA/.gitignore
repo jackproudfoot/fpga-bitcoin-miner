@@ -5,3 +5,4 @@
 !*.xdc
 !*.vhd
 !uart_module/
+!*.mem

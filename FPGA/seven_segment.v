@@ -22,7 +22,7 @@ module seven_segment(ca, an, data, clock);
     wire [2:0] digit_index;
 
     localparam COUNTER_SIZE = 3;
-    counter #( .SIZE(COUNTER_SIZE)) digit_counter (digit_index, display_clock, 1'b0);
+    counter7Seg #( .SIZE(COUNTER_SIZE)) digit_counter (digit_index, display_clock, 1'b0);
 
     reg [3:0] nibble = 4'b0;
 

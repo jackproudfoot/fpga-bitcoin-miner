@@ -1,0 +1,37 @@
+module negate(outNot, inToNot);
+	input [31:0] inToNot;
+	output [31:0] outNot;
+
+	not a(outNot[0], inToNot[0]);
+	not b(outNot[1], inToNot[1]);
+	not c(outNot[2], inToNot[2]);
+	not d(outNot[3], inToNot[3]);
+	not e(outNot[4], inToNot[4]);
+	not f(outNot[5], inToNot[5]);
+	not g(outNot[6], inToNot[6]);
+	not h(outNot[7], inToNot[7]);
+	not i(outNot[8], inToNot[8]);
+	not j(outNot[9], inToNot[9]);
+	not k(outNot[10], inToNot[10]);
+	not l(outNot[11], inToNot[11]);
+	not m(outNot[12], inToNot[12]);
+	not n(outNot[13], inToNot[13]);
+	not o(outNot[14], inToNot[14]);
+	not p(outNot[15], inToNot[15]);
+	not q(outNot[16], inToNot[16]);
+	not r(outNot[17], inToNot[17]);
+	not s(outNot[18], inToNot[18]);
+	not t(outNot[19], inToNot[19]);
+	not u(outNot[20], inToNot[20]);
+	not v(outNot[21], inToNot[21]);
+	not w(outNot[22], inToNot[22]);
+	not x(outNot[23], inToNot[23]);
+	not y(outNot[24], inToNot[24]);
+	not z(outNot[25], inToNot[25]);
+	not aa(outNot[26], inToNot[26]);
+	not bb(outNot[27], inToNot[27]);
+	not cc(outNot[28], inToNot[28]);
+	not dd(outNot[29], inToNot[29]);
+	not ee(outNot[30], inToNot[30]);
+	not ff(outNot[31], inToNot[31]);
+endmodule

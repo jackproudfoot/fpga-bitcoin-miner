@@ -1,4 +1,4 @@
-module counter #(parameter SIZE=2) (q, clock, reset);
+module counter7Seg #(parameter SIZE=2) (q, clock, reset);
     input clock, reset;
 
     output[SIZE-1:0] q;
