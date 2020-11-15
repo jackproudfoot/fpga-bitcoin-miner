@@ -29,7 +29,9 @@ module SHA256_tb();
 		hash7In = 32'b01011011111000001100110100011001;
 
 		// // time delay (ns)
-		#80
+		#128
+		hashValReg <= hashedValue;
+		$display("hash: %h", algor.hashedValue);
 
 		// End testbench
 		$finish;
@@ -38,9 +40,10 @@ module SHA256_tb();
 	// Input Manipulation
 	// Toggle clock every 2s0 ns
 	always begin
-		#20 clock = ~clock;
+		#1 clock = ~clock;
+
 		hashValReg <= hashedValue;
-		$display("hash: %h", algor.hashedValue);
+		//#10 $display("hash: %h", algor.hashedValue);
 		// hash0In = hash1In;
 		// hash1In = hash2In;
 		// hash2In = hash3In;
