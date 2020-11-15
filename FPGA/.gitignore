@@ -2,4 +2,7 @@
 !.gitignore
 !*.v
 !Makefile
+!*.xdc
+!*.vhd
+!uart_module/
 !*.mem
