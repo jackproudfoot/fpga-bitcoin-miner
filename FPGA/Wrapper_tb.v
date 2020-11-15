@@ -24,7 +24,7 @@ module Wrapper_tb();
 
 
 		// time delay (ns)
-		#150000
+		#1000000
 
 		// End testbench
 		$finish;

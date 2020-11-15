@@ -151,7 +151,7 @@ module processor(
     wire [31:0] data_writeRegLoad, dataWriteTemp;
     
     // Take output of register to determine PC
-    assign PCplus1 = PCout + 32'b1;
+    assign PCplus1 = PCout < 32'd100 ? PCout + 32'b1 : 32'd100;
     assign PCMuxTemp = isJumping ? jMux : PCplus1;
     assign PCin = branchTaken ? branchPC : PCMuxTemp;
 
