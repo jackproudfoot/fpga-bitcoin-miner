@@ -52,7 +52,7 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
     saturating_counter satcount(rxce_sat, rxce, clock);
     assign procReset = reset | rxce_sat;
 
-    //Changing 100 MHz clock to 60 MHz
+    //Changing 100 MHz clock to 16.7 MHz
     reg mineClock = 0;
     integer mineCounter = 0;
     always @(posedge clock) begin
@@ -64,7 +64,7 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
       end
     end
 
-    // Changing 100 MHz clock to ? MHz
+    // Changing 16.7 MHz to 2.777 Mhz
     reg procClock = 0;
     integer procCounter = 0;
     always @(posedge mineClock) begin
@@ -74,6 +74,12 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
       end else begin
          procCounter = procCounter + 1;
       end
+    end
+
+    //Changing 100 MHz clock to 50 MHz
+    reg uartClock = 0;
+    always @(posedge clock) begin
+        uartClock = ~uartClock;
     end
     
     ///// Main Processing Unit

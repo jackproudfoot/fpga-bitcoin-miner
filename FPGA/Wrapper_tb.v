@@ -17,14 +17,14 @@ module Wrapper_tb();
 		clk <= 1'b1;
 		reset <= 1'b0;
 
-		#3000
-		rxd <= 1'b1;
-		#100
-		rxd <= 1'b0;
+		// #3000
+		// rxd <= 1'b1;
+		// #100
+		// rxd <= 1'b0;
 
 
 		// time delay (ns)
-		#100000
+		#1000000
 
 		// End testbench
 		$finish;

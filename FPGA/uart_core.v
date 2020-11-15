@@ -34,7 +34,7 @@ module uart_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data
 
     uart uart_module(.din(tx),
 	       .wr_en(txce),
-	       .clk_50m(transmit_clock),
+	       .clk_50m(clock),
 	       .tx(txd),
 	       .tx_busy(is_transmitting),
 	       .rx(rxd),
