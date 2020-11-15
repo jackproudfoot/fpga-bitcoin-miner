@@ -18,13 +18,22 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 	dffe_ref resetDFF(wasReset, reset, ~clock, 1'b1, 1'b0);
 	assign legitReset = (reset & ~wasReset);
 
-    mineCounter count(outCount, clock, (counterAtThree | legitReset));
+	wire [6:0] cycle_counter;
+
+	wire cycle_counter_reset;
+	assign cycle_counter_reset = cycle_counter == 65;
+
+	mineCounter #(.SIZE(7)) count_cycle(cycle_counter, clock, (cycle_counter_reset | legitReset));
+
+	
+
+    mineCounter count(outCount, cycle_counter_reset, (counterAtThree | legitReset));
     assign firstBlock = (outCount == 2'b00);
     assign secondBlock = (outCount == 2'b01);
     assign finalHash = (outCount == 2'b10);
     assign counterAtThree = (outCount == 2'b11);
-
     
+	
 
 	assign h0_init = 32'b01101010000010011110011001100111;
 	assign h1_init = 32'b10111011011001111010111010000101;
@@ -56,15 +65,18 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 		   				h0In, h1In, h2In, h3In, h4In, h5In, h6In, h7In,
 		   				h0Out, h1Out, h2Out, h3Out, h4Out, h5Out, h6Out, h7Out);
 
-	reg32 h0_reg(q_h0, h0Out, ~clock, 1'b1, 1'b0);
-	reg32 h1_reg(q_h1, h1Out, ~clock, 1'b1, 1'b0);
-	reg32 h2_reg(q_h2, h2Out, ~clock, 1'b1, 1'b0);
-	reg32 h3_reg(q_h3, h3Out, ~clock, 1'b1, 1'b0);
-	reg32 h4_reg(q_h4, h4Out, ~clock, 1'b1, 1'b0);
-	reg32 h5_reg(q_h5, h5Out, ~clock, 1'b1, 1'b0);
-	reg32 h6_reg(q_h6, h6Out, ~clock, 1'b1, 1'b0);
-	reg32 h7_reg(q_h7, h7Out, ~clock, 1'b1, 1'b0);
-	reg256 return_reg(hashedVal, shaReturn, ~clock, 1'b1, 1'b0);
+	wire write_hash_reg;
+	assign write_hash_reg = ~clock & (cycle_counter == 64);
+
+	reg32 h0_reg(q_h0, h0Out, write_hash_reg, 1'b1, 1'b0);
+	reg32 h1_reg(q_h1, h1Out, write_hash_reg, 1'b1, 1'b0);
+	reg32 h2_reg(q_h2, h2Out, write_hash_reg, 1'b1, 1'b0);
+	reg32 h3_reg(q_h3, h3Out, write_hash_reg, 1'b1, 1'b0);
+	reg32 h4_reg(q_h4, h4Out, write_hash_reg, 1'b1, 1'b0);
+	reg32 h5_reg(q_h5, h5Out, write_hash_reg, 1'b1, 1'b0);
+	reg32 h6_reg(q_h6, h6Out, write_hash_reg, 1'b1, 1'b0);
+	reg32 h7_reg(q_h7, h7Out, write_hash_reg, 1'b1, 1'b0);
+	reg256 return_reg(hashedVal, shaReturn, write_hash_reg, 1'b1, 1'b0);
 
 	// reg64 nonceReg(nonce, blockToHash[191:128] + 1'b1, ~clock, firstBlock, 1'b0);
 	// assign nonce = 32'h42a14695;
