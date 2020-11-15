@@ -3,7 +3,7 @@ module saturating_counter(saturated, signal, clock);
 
     input signal, clock;
 
-    reg [2:0] prev_signals;
+    reg [2:0] prev_signals = 3'b0;
 
     always @(posedge clock) begin
         prev_signals[2] <= prev_signals[1];

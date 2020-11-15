@@ -56,7 +56,7 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
     reg mineClock = 0;
     integer mineCounter = 0;
     always @(posedge clock) begin
-      if(mineCounter == 2) begin
+      if(mineCounter == 3) begin
          mineCounter = 0;
          mineClock = ~mineClock;
       end else begin
