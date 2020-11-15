@@ -49,7 +49,7 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
     wire rxce;
 
     wire procReset, rxce_sat;
-    saturating_counter satcount(rxce_sat, rxce, clock);
+    saturating_counter satcount(rxce_sat, rxce, uartClock);
     assign procReset = reset | rxce_sat;
 
     //Changing 100 MHz clock to 33.3 MHz
