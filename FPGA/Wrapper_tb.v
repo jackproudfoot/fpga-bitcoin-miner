@@ -6,7 +6,7 @@ module Wrapper_tb();
 	wire txd;
 	reg rxd = 0;
 
-	reg [1:0] display_toggle = 1'b0;
+	reg [2:0] display_toggle = 3'b0;
 
 	// Module to test
 	Wrapper processor(clk, reset, ca, an, txd, rxd, display_toggle);
@@ -14,11 +14,17 @@ module Wrapper_tb();
 	// Give inputs and runtime
 	initial begin
 		// Initialize inputs to 0
-		clk = 1;
-		reset = 0;
+		clk <= 1'b1;
+		reset <= 1'b0;
+
+		#3000
+		reset <= 1'b1;
+		#30
+		reset <= 1'b0;
+
 
 		// time delay (ns)
-		#100000
+		#15000
 
 		// End testbench
 		$finish;

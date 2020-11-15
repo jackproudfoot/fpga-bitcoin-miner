@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
  
-module uart_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data, rxce);
+module uart_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data, rxce, byteCount);
 
     input [31:0] nonce_input;
     input transmit_data;
@@ -17,6 +17,8 @@ module uart_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data
 
     reg [7:0] tx;
     wire [7:0] rx;
+
+    output reg [31:0] byteCount = 0;
 
     initial begin
         tx <= 8'b0;
@@ -49,6 +51,12 @@ module uart_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data
         .INPUT_WIDTH(HEADER_REG_INPUT_WIDTH),
         .DATA_WIDTH(HEADER_REG_DATA_WIDTH)
     ) header_reg (header_data, rx, rxce, rxce, 1'b0, reset);
+    //assign header_data = 640'h0100000081cd02ab7e569e8bcd9317e2fe99f2de44d49ab2b8851ba4a308000000000000e320b6c2fffc8d750423db8b1eb942ae710e951ed797f7affc8892b0f1fc122bc7f5d74df2b9441a42a14695;
+
+    always @(posedge rxce) begin
+        byteCount <= byteCount + 1;
+    end
+    
 
     wire [31:0] nonce_data;
     reg shift_nonce = 0;
