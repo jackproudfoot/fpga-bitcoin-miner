@@ -4,15 +4,15 @@
 ## - rename the used ports (in each line, after get_ports) according to the top level signal names in the project
 
 ## Clock signal
-set_property -dict { PACKAGE_PIN E3    IOSTANDARD LVCMOS33 } [get_ports { fpga_clock }]; #IO_L12P_T1_MRCC_35 Sch=clk100mhz
-create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports {fpga_clock}];
+set_property -dict { PACKAGE_PIN E3    IOSTANDARD LVCMOS33 } [get_ports { clock }]; #IO_L12P_T1_MRCC_35 Sch=clk100mhz
+create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports {clock}];
 
 ##Buttons
 
 set_property -dict { PACKAGE_PIN M18   IOSTANDARD LVCMOS33 } [get_ports { reset }];
 
-set_property -dict { PACKAGE_PIN N17   IOSTANDARD LVCMOS33 } [get_ports { display_toggle }];
-set_property -dict { PACKAGE_PIN P17   IOSTANDARD LVCMOS33 } [get_ports { transmit_data }];
+## set_property -dict { PACKAGE_PIN N17   IOSTANDARD LVCMOS33 } [get_ports { display_toggle }];
+## set_property -dict { PACKAGE_PIN P17   IOSTANDARD LVCMOS33 } [get_ports { transmit_data }];
 
 ## LEDS
 

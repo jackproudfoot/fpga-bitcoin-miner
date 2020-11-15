@@ -20,9 +20,8 @@
  *
  **/
 
-module Wrapper(clock, reset, led, ca, an, txd, rxd);
+module Wrapper(clock, reset, ca, an, txd, rxd);
     input clock, reset;
-    output led;
     output [7:0] ca, an;
 
     wire rwe, mwe;

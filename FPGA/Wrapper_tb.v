@@ -1,14 +1,13 @@
 `timescale 1 ns / 100 ps
 module Wrapper_tb();
 	reg clk, reset;
-	wire led;
 	wire [7:0] ca, an;
 
 	wire txd;
 	reg rxd = 0;
 
 	// Module to test
-	Wrapper processor(clk, reset, led, ca, an, txd, rxd);
+	Wrapper processor(clk, reset, ca, an, txd, rxd);
 
 	// Give inputs and runtime
 	initial begin
