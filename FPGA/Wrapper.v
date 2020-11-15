@@ -48,10 +48,6 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
     wire timeToSend;
     wire rxce;
 
-    wire procReset, rxce_sat;
-    saturating_counter satcount(rxce_sat, rxce, uartClock);
-    assign procReset = reset | rxce_sat;
-
     //Changing 100 MHz clock to 33.3 MHz
     reg mineClock = 0;
     integer mineCounter = 0;
@@ -82,6 +78,12 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
         uartClock = ~uartClock;
     end
     
+    wire procReset, rxce_sat, reset_sat;
+    wire [2:0] prev_rxce, prev_reset;
+    saturating_counter rxcesatcount(rxce_sat, prev_rxce, rxce, uartClock);
+    saturating_counter resetsatcount(reset_sat, prev_reset, reset, uartClock);
+    assign procReset = (prev_reset[2] | prev_reset[1] | prev_reset[0] | reset) | rxce_sat;
+
     ///// Main Processing Unit
     processor CPU(.clock(procClock), .reset(procReset), 
                   
@@ -133,14 +135,17 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
     ///// Mining Operation
     // assign nonce = 32'h42a14695;
     //assign blockHeader = 640'h0100000081cd02ab7e569e8bcd9317e2fe99f2de44d49ab2b8851ba4a308000000000000e320b6c2fffc8d750423db8b1eb942ae710e951ed797f7affc8892b0f1fc122bc7f5d74df2b9441a42a14695;
+    
+    wire hashFound;
+    dffe_ref goodHash(hashSuccess, hashSuccess | hashFound, ~clock, 1'b1, procReset);
+    
     minerControl mineTime(.blockHeader(blockHeader),
                           .satisfactoryHash(outHash),
                           .clock(mineClock),
                           .ledControl(led),
                           .nonce(nonce),
-                          .hashSuccess(hashSuccess),
+                          .hashSuccess(hashFound),
                           .reset(resetMine));
-
 
 
     //// Serial UART Core
@@ -149,7 +154,7 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
 
     ///// Seven Segment Display
 
-    reg32 goodNonce(finalNonce, nonce, clock, hashSuccess, 1'b0);
+    reg32 goodNonce(finalNonce, nonce, clock, hashSuccess, procReset);
     
     wire [31:0] seven_segment_data;
     assign seven_segment_data [31:0] = display_toggle[0] ? blockHeader[639:608] : display_toggle[1] ? nonce : display_toggle[2] ? byteCount : display_toggle[3] ? outHash[255:224] : finalNonce;
