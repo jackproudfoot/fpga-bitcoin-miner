@@ -13,7 +13,7 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 	wire [31:0] h0In, h1In, h2In, h3In, h4In, h5In, h6In, h7In, h0Out, h1Out, h2Out, h3Out, h4Out, h5Out, h6Out, h7Out;
 	wire [15:0] test1;
 	wire [1:0] outCount;
-	wire counterAtThree, firstBlock, secondBlock, finalHash, legitReset, wasReset;
+	wire counterAtThree, firstBlock, secondBlock, finalHash, legitReset, wasReset, hashCheck;
 
 	dffe_ref resetDFF(wasReset, reset, ~clock, 1'b1, 1'b0);
 	assign legitReset = (reset & ~wasReset);
