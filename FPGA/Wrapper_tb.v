@@ -4,8 +4,11 @@ module Wrapper_tb();
 	wire led;
 	wire [7:0] ca, an;
 
+	wire txd;
+	reg rxd = 0;
+
 	// Module to test
-	Wrapper processor(clk, reset, led, ca, an);
+	Wrapper processor(clk, reset, led, ca, an, txd, rxd);
 
 	// Give inputs and runtime
 	initial begin
@@ -14,7 +17,7 @@ module Wrapper_tb();
 		reset = 0;
 
 		// time delay (ns)
-		#10000
+		#100000
 
 		// End testbench
 		$finish;

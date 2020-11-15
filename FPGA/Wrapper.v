@@ -20,7 +20,7 @@
  *
  **/
 
-module Wrapper(clock, reset, led, ca, an);
+module Wrapper(clock, reset, led, ca, an, txd, rxd);
     input clock, reset;
     output led;
     output [7:0] ca, an;
@@ -39,24 +39,34 @@ module Wrapper(clock, reset, led, ca, an);
     wire [31:0] finalNonce;
 
     wire [31:0] nonceIn;
-    assign nonceIn = 32'h42A14693;
+    assign nonceIn = blockHeader[31:0];
 
-    // Changing 100 MHz clock to 60 MHz
-    // reg mineClock = 0;
-    // integer mineCounter = 0;
-    // always @(posedge clock) begin
-    //   if(mineCounter == 2) begin
-    //      mineCounter = 0;
-    //      mineClock = ~mineClock;
-    //   end else begin
-    //      mineCounter = mineCounter + 1;
-    //   end
-    // end
+    input rxd;
+    output txd;
+
+    wire timeToSend;
+    wire rxce;
+
+    wire procReset, rxce_sat;
+    saturating_counter satcount(rxce_sat, rxce, clock);
+    assign procReset = reset | rxce_sat;
+
+    //Changing 100 MHz clock to 60 MHz
+    reg mineClock = 0;
+    integer mineCounter = 0;
+    always @(posedge clock) begin
+      if(mineCounter == 2) begin
+         mineCounter = 0;
+         mineClock = ~mineClock;
+      end else begin
+         mineCounter = mineCounter + 1;
+      end
+    end
 
     // Changing 100 MHz clock to ? MHz
     reg procClock = 0;
     integer procCounter = 0;
-    always @(posedge clock) begin
+    always @(posedge mineClock) begin
       if(procCounter == 2) begin
          procCounter = 0;
          procClock = ~procClock;
@@ -66,7 +76,7 @@ module Wrapper(clock, reset, led, ca, an);
     end
     
     ///// Main Processing Unit
-    processor CPU(.clock(procClock), .reset(reset), 
+    processor CPU(.clock(procClock), .reset(procReset), 
                   
 		  ///// ROM
                   .address_imem(instAddr), .q_imem(instData),
@@ -98,7 +108,7 @@ module Wrapper(clock, reset, led, ca, an);
     
     ///// Register File
     regfile RegisterFile(.clock(procClock), 
-             .ctrl_writeEnable(rwe), .ctrl_reset(reset), 
+             .ctrl_writeEnable(rwe), .ctrl_reset(procReset), 
              .ctrl_writeReg(rd),
              .ctrl_readRegA(rs1), .ctrl_readRegB(rs2), 
              .data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB));
@@ -115,14 +125,19 @@ module Wrapper(clock, reset, led, ca, an);
 
     ///// Mining Operation
     // assign nonce = 32'h42a14695;
-    assign blockHeader = 640'h0100000081cd02ab7e569e8bcd9317e2fe99f2de44d49ab2b8851ba4a308000000000000e320b6c2fffc8d750423db8b1eb942ae710e951ed797f7affc8892b0f1fc122bc7f5d74df2b9441a42a14695;
+    //assign blockHeader = 640'h0100000081cd02ab7e569e8bcd9317e2fe99f2de44d49ab2b8851ba4a308000000000000e320b6c2fffc8d750423db8b1eb942ae710e951ed797f7affc8892b0f1fc122bc7f5d74df2b9441a42a14695;
     minerControl mineTime(.blockHeader(blockHeader),
                           .satisfactoryHash(outHash),
-                          .clock(clock),
+                          .clock(mineClock),
                           .ledControl(led),
                           .nonce(nonce),
                           .hashSuccess(hashSuccess),
                           .reset(resetMine));
+
+
+
+    //// Serial UART Core
+    uart_core serial_core(clock, reset, rxd, txd, nonce, timeToSend, blockHeader, rxce);
 
     ///// Seven Segment Display
     reg32 goodNonce(finalNonce, nonce, clock, hashSuccess, 1'b0);
