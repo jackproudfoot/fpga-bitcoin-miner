@@ -119,9 +119,9 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 	
 	assign difficulty = {16'b0, 240'hffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff};
 	
-	//assign hashCheck = ((difficulty > hashToCheck) & (finalHash) & (cycle_counter == 64));
+	assign hashCheck = ((difficulty > hashToCheck) & (finalHash) & (cycle_counter == 64));
 	
-	assign hashCheck = ((difficulty > hashToCheck) & (finalHash));
+	//assign hashCheck = ((difficulty > hashToCheck) & (finalHash));
 
 	//assign hashSuccess = hashCheck;
 	dffe_ref goodHash(hashSuccess, hashCheck, ~clock, 1'b1, legitReset);
