@@ -48,8 +48,10 @@ module processor(
     
     // SerialCore
     timeToSend,                     // O: Control signal for serial core
-    nonceIn                         // I: Nonce input from serial core
+    nonceIn,                         // I: Nonce input from serial core
 
+
+    goodHashLed
     );
 
     // Control signals
@@ -78,6 +80,8 @@ module processor(
     // Send
     output timeToSend;
     input [31:0] nonceIn;
+
+    output goodHashLed;
 
     /* YOUR CODE STARTS HERE */
 
@@ -367,6 +371,7 @@ module processor(
 
     // Hold value of hashSuccess for 1 processor clock cycle
     dffe_ref hashSuc(goodHash, hashSuccess, ~clock, hashSuccess, reset);   
+    assign goodHashLed = goodHash;
 
     // Chose 1 if hashSuccess is high
     assign data_resultMine1 = timeToMine ? 32'b0 : data_resultALU;

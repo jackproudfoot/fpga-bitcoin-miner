@@ -8,8 +8,10 @@ module Wrapper_tb();
 
 	reg [3:0] display_toggle = 4'b0;
 
+	wire hash_success_led, goodHashLed;
+
 	// Module to test
-	Wrapper processor(clk, reset, ca, an, txd, rxd, display_toggle);
+	Wrapper processor(clk, reset, ca, an, txd, rxd, display_toggle, hash_success_led, goodHashLed);
 
 	// Give inputs and runtime
 	initial begin

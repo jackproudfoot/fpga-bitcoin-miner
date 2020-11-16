@@ -20,7 +20,7 @@
  *
  **/
 
-module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
+module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle, hash_success_led, goodHashLed);
     input clock, reset;
     output [7:0] ca, an;
 
@@ -39,6 +39,8 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
 
     wire [31:0] nonceIn;
     assign nonceIn = blockHeader[31:0];
+
+    output hash_success_led, goodHashLed;
 
     input rxd;
     output txd;
@@ -107,7 +109,9 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
                   .resetMine(resetMine),
       ///// Send
                   .timeToSend(timeToSend),
-                  .nonceIn(nonceIn));
+                  .nonceIn(nonceIn)),
+                  
+                  .goodHashLed(goodHashLed);
                   
     ///// Instruction Memory (ROM)
     ROM #(.MEMFILE("testMine.mem")) // Add your memory file here
@@ -140,6 +144,8 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
     
     wire hashFound;
     dffe_ref goodHash(hashSuccess, hashSuccess | hashFound, ~clock, 1'b1, procReset);
+
+    assign hash_success_led = hashFound;
     
     minerControl mineTime(.blockHeader(blockHeader),
                           .satisfactoryHash(outHash),
