@@ -117,7 +117,7 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 						  shaReturn[247], shaReturn[246], shaReturn[245], shaReturn[244], shaReturn[243], shaReturn[242], shaReturn[241], shaReturn[240], 
 						  shaReturn[255], shaReturn[254], shaReturn[253], shaReturn[252], shaReturn[251], shaReturn[250], shaReturn[249], shaReturn[248]};
 	
-	assign difficulty = {16'b0, 240'h1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff};
+	assign difficulty = {16'b0, 240'hffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff};
 	
 	assign hashCheck = ((difficulty > hashToCheck) & (finalHash) & (cycle_counter == 64));
 	
