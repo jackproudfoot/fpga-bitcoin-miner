@@ -20,9 +20,11 @@
  *
  **/
 
-module Wrapper(clock, reset, led, ca, an);
-    input clock, reset;
-    output led;
+module Wrapper(clock, reset, led, ca, an, rxd, txd, switch1, switch2, switch3, switch4, switch5, switch6,
+               switch7, switch8, switch9, switch10, switch11, switch12, switch13, switch14, switch15, switch16);
+
+    input clock, reset, rxd, switch1, switch2, switch3, switch4, switch5, switch6, switch7, switch8, switch9, switch10, switch11, switch12, switch13, switch14, switch15, switch16;
+    output led, txd;
     output [7:0] ca, an;
 
     wire rwe, mwe;
@@ -33,13 +35,21 @@ module Wrapper(clock, reset, led, ca, an);
 
     wire hashSuccess;
     wire [31:0] nonce;
-    wire [255:0] outHash;
+    wire [255:0] outHash, difficulty;
     wire [639:0] blockHeader;
 
     wire [31:0] finalNonce;
 
     wire [31:0] nonceIn;
-    assign nonceIn = 32'h42A14693;
+    assign nonceIn = blockHeader[31:0];
+
+    wire timeToSendTest, rxce;
+    wire [31:0] nonceTest;
+    wire [639:0] blockHeaderTest;
+    assign timeToSendTest = 1'b0;
+    assign rxce = 1'b0;
+    assign nonceTest = 32'b0;
+    assign blockHeaderTest = 640'b0;
 
      // Changing 100 MHz clock to 33.3 MHz
      reg mineClock = 0;
@@ -113,18 +123,32 @@ module Wrapper(clock, reset, led, ca, an);
     // assign hashSuccess = 1'b0;
     // assign nonce = 32'h42a14695;
 
+    ///// switchBoard
+    switchBoard swap(.switch1(switch1), .switch2(switch2), .switch3(switch3), .switch4(switch4),
+                     .switch5(switch5), .switch6(switch6), .switch7(switch7), .switch8(switch8),
+                     .switch9(switch9), .switch10(switch10), .switch11(switch11), .switch12(switch12),
+                     .switch13(switch13), .switch14(switch14), .switch15(switch15), .switch16(switch16),
+                     .blockHeader(blockHeader), .difficulty(difficulty));
+
     ///// Mining Operation
-    assign blockHeader = 640'h0100000081cd02ab7e569e8bcd9317e2fe99f2de44d49ab2b8851ba4a308000000000000e320b6c2fffc8d750423db8b1eb942ae710e951ed797f7affc8892b0f1fc122bc7f5d74df2b9441a42a14695;
+    //assign blockHeader = 640'h0100000081cd02ab7e569e8bcd9317e2fe99f2de44d49ab2b8851ba4a308000000000000e320b6c2fffc8d750423db8b1eb942ae710e951ed797f7affc8892b0f1fc122bc7f5d74df2b9441a42a14695;
     minerControl mineTime(.blockHeader(blockHeader),
                           .satisfactoryHash(outHash),
                           .clock(mineClock),
                           .ledControl(led),
                           .nonce(nonce),
                           .hashSuccess(hashSuccess),
-                          .reset(resetMine));
+                          .reset(resetMine),
+                          .resetButton(reset),
+                          .difficulty(difficulty));
+
+    //// Serial UART Core
+    uart_core serial_core(.clock(clock), .reset(reset),
+                          .rxd(rxd), .txd(txd), .nonce_input(nonceTest),
+                          .transmit_data(timeToSendTest), .header_data(blockHeaderTest), .rxce(rxce));
 
     ///// Seven Segment Display
-    reg32 goodNonce(finalNonce, nonce, clock, hashSuccess, 1'b0);
-    seven_segment disp(.ca(ca), .an(an), .data(nonce), .clock(clock));
+    reg32 goodNonce(finalNonce, blockHeader[31:0], clock, led, reset);
+    seven_segment disp(.ca(ca), .an(an), .data(finalNonce), .clock(clock));
 
 endmodule

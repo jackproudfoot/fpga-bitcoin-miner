@@ -1,12 +1,13 @@
-module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, hashSuccess, reset);
+module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, hashSuccess, reset, difficulty);
 	input clock, reset;
 	input [31:0] nonce;
+	input [255:0] difficulty;
 	input [639:0] blockHeader;
 	output ledControl, hashSuccess;
 	output [255:0] satisfactoryHash;
 
 	wire [511:0] blockOne, blockTwo, blockNonce, blockFinal, blockToHash;
-	wire [255:0] shaReturn, hashedVal, difficulty, hashToCheck;
+	wire [255:0] shaReturn, hashedVal, hashToCheck;
 	// wire [63:0] nonce;
 	wire [31:0] h0_init, h1_init, h2_init, h3_init, h4_init, h5_init, h6_init, h7_init;
 	wire [31:0] q_h0, q_h1, q_h2, q_h3, q_h4, q_h5, q_h6, q_h7;
@@ -117,14 +118,12 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 						  shaReturn[247], shaReturn[246], shaReturn[245], shaReturn[244], shaReturn[243], shaReturn[242], shaReturn[241], shaReturn[240], 
 						  shaReturn[255], shaReturn[254], shaReturn[253], shaReturn[252], shaReturn[251], shaReturn[250], shaReturn[249], shaReturn[248]};
 	
-	assign difficulty = {16'b0, 240'hffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff};
-	
 	assign hashCheck = ((difficulty > hashToCheck) & (finalHash));
 	dffe_ref goodHash(hashSuccess, hashCheck, ~clock, 1'b1, 1'b0);
 
 	assign satisfactoryHash = hashSuccess ? shaReturn : 256'b0;
 
-	dffe_ref ledDFF(ledControl, hashSuccess, clock, hashSuccess, 1'b0);
+	dffe_ref ledDFF(ledControl, hashSuccess, clock, hashSuccess, reset);
 
 
 
