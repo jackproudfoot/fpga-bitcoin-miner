@@ -104,7 +104,7 @@ module processor(
 
     // Wires for bitcoin mining
     wire timeToMine, goodHash, restart, hashStall;
-    wire [6:0] hashStallCount;
+    wire [7:0] hashStallCount;
     wire [31:0] data_resultMine1, data_resultMine2;
     wire grabNonce, storeNonce;
     wire [31:0] execute_inject;
@@ -279,9 +279,9 @@ module processor(
     assign nonce = rsDataBy;
 
     // Counter for minerControl Module and Stalling
-    assign restart = (hashStallCount > 34) & (timeToMine);
+    assign restart = (hashStallCount > 197) & (timeToMine);
     stallCounter hashCounter(clock, reset, restart, hashStallCount);
-    assign hashStall = (timeToMine & (hashStallCount < 33)) | restart;
+    assign hashStall = (timeToMine & (hashStallCount < 196)) | restart;
 
     // Sign extend immediate and determine if addi instruction is called
     signExtend32 extendImm(extendedImm, immediate);

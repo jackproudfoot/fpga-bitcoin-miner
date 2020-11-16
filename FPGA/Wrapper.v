@@ -56,31 +56,39 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle, hashLed);
         uartClock = ~uartClock;
     end
 
-    wire mineClock;
-    assign mineClock = uartClock;
+    // wire mineClock;
+    // assign mineClock = uartClock;
 
     // reg mineClock = 0;
-    // integer mineCounter = 0;
     // always @(posedge uartClock) begin
-    //   if(mineCounter == 1) begin
-    //      mineCounter = 0;
-    //      mineClock = ~mineClock;
-    //   end else begin
-    //      mineCounter = mineCounter + 1;
-    //   end
+    //     mineClock = ~mineClock;
     // end
 
-
-    reg procClock = 0;
-    integer procCounter = 0;
-    always @(posedge mineClock) begin
-      if(procCounter == 2) begin
-         procCounter = 0;
-         procClock = ~procClock;
+    reg mineClock = 0;
+    integer mineCounter = 0;
+    always @(posedge uartClock) begin
+      if(mineCounter == 3) begin
+         mineCounter = 0;
+         mineClock = ~mineClock;
       end else begin
-         procCounter = procCounter + 1;
+         mineCounter = mineCounter + 1;
       end
     end
+
+
+    wire procClock;
+    assign procClock = mineClock;
+
+    // reg procClock = 0;
+    // integer procCounter = 0;
+    // always @(posedge mineClock) begin
+    //   if(procCounter == 2) begin
+    //      procCounter = 0;
+    //      procClock = ~procClock;
+    //   end else begin
+    //      procCounter = procCounter + 1;
+    //   end
+    // end
     
     wire procReset, rxce_sat, reset_sat;
     wire [2:0] prev_rxce, prev_reset;
