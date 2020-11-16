@@ -6,10 +6,12 @@ module Wrapper_tb();
 	wire txd;
 	reg rxd = 0;
 
+	wire hashLed;
+
 	reg [3:0] display_toggle = 4'b0;
 
 	// Module to test
-	Wrapper processor(clk, reset, ca, an, txd, rxd, display_toggle);
+	Wrapper processor(clk, reset, ca, an, txd, rxd, display_toggle, hashLed);
 
 	// Give inputs and runtime
 	initial begin

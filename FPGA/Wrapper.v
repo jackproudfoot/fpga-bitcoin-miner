@@ -20,7 +20,7 @@
  *
  **/
 
-module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
+module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle, hashLed);
     input clock, reset;
     output [7:0] ca, an;
 
@@ -42,6 +42,8 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
 
     input rxd;
     output txd;
+
+    output hashLed;
 
     input [3:0] display_toggle;
 
@@ -137,6 +139,8 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
     
     wire hashFound;
     dffe_ref goodHash(hashSuccess, hashSuccess | hashFound, ~clock, 1'b1, procReset);
+
+    assign hashLed = hashSuccess;
     
     minerControl mineTime(.blockHeader(blockHeader),
                           .satisfactoryHash(outHash),
