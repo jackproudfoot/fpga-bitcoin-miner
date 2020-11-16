@@ -19,14 +19,9 @@ module Wrapper_tb();
 		clk <= 1'b1;
 		reset <= 1'b0;
 
-		#50000
-		reset <= 1'b1;
-		#100
-		reset <= 1'b0;
-
 
 		// time delay (ns)
-		#1000000
+		#30000
 
 		// End testbench
 		$finish;

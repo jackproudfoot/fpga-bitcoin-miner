@@ -279,9 +279,9 @@ module processor(
     assign nonce = rsDataBy;
 
     // Counter for minerControl Module and Stalling
-    assign restart = (hashStallCount > 33) & (timeToMine);
+    assign restart = (hashStallCount > 34) & (timeToMine);
     stallCounter hashCounter(clock, reset, restart, hashStallCount);
-    assign hashStall = (timeToMine & (hashStallCount < 32)) | restart;
+    assign hashStall = (timeToMine & (hashStallCount < 33)) | restart;
 
     // Sign extend immediate and determine if addi instruction is called
     signExtend32 extendImm(extendedImm, immediate);
@@ -366,7 +366,7 @@ module processor(
     assign storeNonce = (instrOutMW[31:27] == 5'b11100);
 
     // Hold value of hashSuccess for 1 processor clock cycle
-    dffe_ref hashSuc(goodHash, hashSuccess, ~clock, hashSuccess, reset);   
+    dffe_ref hashSuc(goodHash, hashSuccess, clock, hashSuccess, reset);   
 
     // Chose 1 if hashSuccess is high
     assign data_resultMine1 = timeToMine ? 32'b0 : data_resultALU;

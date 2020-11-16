@@ -21,7 +21,7 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 	wire [6:0] cycle_counter;
 
 	wire cycle_counter_reset;
-	assign cycle_counter_reset = cycle_counter == 65;
+	assign cycle_counter_reset = cycle_counter == 66;
 
 	mineCounter #(.SIZE(7)) count_cycle(cycle_counter, clock, (cycle_counter_reset | legitReset));
 
@@ -57,11 +57,13 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 	assign blockOne = blockHeader[639:128];
     assign blockTwo = {blockHeader[127:32], nonce, 1'b1, 373'b0, 10'b1010000000};
 
-	assign blockFinal = {hashedVal, 1'b1, 246'b0, 9'b100000000};
+	assign blockFinal = {shaReturn, 1'b1, 246'b0, 9'b100000000};
 
 	assign blockToHash = firstBlock ? blockOne : secondBlock ? blockTwo : blockFinal;
 
-	SHA256 hashFunction(blockToHash, shaReturn, clock, 
+	wire [255:0] shaOutput;
+
+	SHA256 hashFunction(blockToHash, shaOutput, clock, 
 		   				h0In, h1In, h2In, h3In, h4In, h5In, h6In, h7In,
 		   				h0Out, h1Out, h2Out, h3Out, h4Out, h5Out, h6Out, h7Out);
 
@@ -76,7 +78,7 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 	reg32 h5_reg(q_h5, h5Out, write_hash_reg, 1'b1, 1'b0);
 	reg32 h6_reg(q_h6, h6Out, write_hash_reg, 1'b1, 1'b0);
 	reg32 h7_reg(q_h7, h7Out, write_hash_reg, 1'b1, 1'b0);
-	reg256 return_reg(hashedVal, shaReturn, write_hash_reg, 1'b1, 1'b0);
+	reg256 return_reg(shaReturn, shaOutput, write_hash_reg, 1'b1, 1'b0);
 
 	// reg64 nonceReg(nonce, blockToHash[191:128] + 1'b1, ~clock, firstBlock, 1'b0);
 	// assign nonce = 32'h42a14695;
@@ -119,12 +121,13 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 	
 	assign difficulty = {16'b0, 240'hffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff};
 	
-	assign hashCheck = ((difficulty > hashToCheck) & (finalHash) & (cycle_counter == 64));
+
+	assign hashCheck = ((difficulty > hashToCheck) & (finalHash) & (cycle_counter == 65));
 	
 	//assign hashCheck = ((difficulty > hashToCheck) & (finalHash));
 
-	//assign hashSuccess = hashCheck;
-	dffe_ref goodHash(hashSuccess, hashCheck, ~clock, 1'b1, legitReset);
+	assign hashSuccess = hashCheck;
+	//dffe_ref goodHash(hashSuccess, hashCheck, ~clock, 1'b1, legitReset);
 
 	//assign satisfactoryHash = hashSuccess ? shaReturn : 256'b0;
 	assign satisfactoryHash = shaReturn;

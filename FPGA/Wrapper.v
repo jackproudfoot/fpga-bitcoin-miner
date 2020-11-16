@@ -161,7 +161,7 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle, hashLed);
 
     ///// Seven Segment Display
 
-    reg32 goodNonce(finalNonce, nonce, ~clock, hashFound, procReset);
+    reg32 goodNonce(finalNonce, nonce, ~clock, hashFound, 1'b0);
     
     wire [31:0] seven_segment_data;
     assign seven_segment_data [31:0] = display_toggle[0] ? blockHeader[639:608] : display_toggle[1] ? nonce : display_toggle[2] ? byteCount : display_toggle[3] ? outHash[255:224] : finalNonce;
