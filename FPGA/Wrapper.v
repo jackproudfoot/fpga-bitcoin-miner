@@ -56,8 +56,10 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
 
     //Changing 100 MHz clock to 33.3 MHz
     //reg mineClock = 0;
-    wire mineClock;
-    assign mineClock = uartClock;
+    reg mineClock;
+    always @(posedge uartClock) begin
+        mineClock = ~mineClock;
+    end
 //     integer mineCounter = 0;
 //     always @(posedge clock) begin
 //       if(mineCounter == 2) begin
