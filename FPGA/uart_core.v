@@ -70,15 +70,15 @@ module uart_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data
 
 
     wire transmit;
-    //edge_detector transmit_edge_detector(transmit_clock, transmit_data, transmit);
-    assign transmit = transmit_data;
+    edge_detector transmit_edge_detector(transmit_clock, transmit_data, transmit);
+
 
     localparam NONCE_REG_INPUT_WIDTH = 32;
     localparam NONCE_REG_DATA_WIDTH = 32;
     shift_reg #(
         .INPUT_WIDTH(NONCE_REG_INPUT_WIDTH),
         .DATA_WIDTH(NONCE_REG_DATA_WIDTH)
-    ) nonce_reg (nonce_data, nonce_input, ~clock, transmit, shift_nonce, reset);
+    ) nonce_reg (nonce_data, nonce_input, ~transmit_clock, transmit, shift_nonce, reset);
 
     
     integer bytesToSend = 0;
@@ -89,7 +89,7 @@ module uart_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data
         shift_nonce <= 0;
     end
 
-    always @(posedge clock) begin
+    always @(posedge transmit_clock) begin
         if (!trans_ongoing) begin
             if (transmit) begin
                 bytesToSend = 4;

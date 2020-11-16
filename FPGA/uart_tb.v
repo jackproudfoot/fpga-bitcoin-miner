@@ -19,7 +19,7 @@ module uart_tb();
 		#10
 		reset <= 1'b0;
 
-		#10000
+		#100000
 
 		// End testbench
 		$finish;
