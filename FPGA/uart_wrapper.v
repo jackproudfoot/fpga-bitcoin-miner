@@ -38,7 +38,8 @@ module uart_wrapper(fpga_clock, reset, rxd, txd, ca, an, display_toggle);
 
 
     wire [31:0] display_data;
-    assign display_data = display_toggle[0] ? header_data[31:0] : display_toggle[1] ? header_data[639:608] : nonce_input;
+    //assign display_data = display_toggle[0] ? header_data[31:0] : display_toggle[1] ? header_data[639:608] : nonce_input;
+    assign display_data[31:0] = current_nonce[31:0];
 
     seven_segment display(ca, an, display_data, fpga_clock);
 
