@@ -54,23 +54,18 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
         uartClock = ~uartClock;
     end
 
-    //Changing 100 MHz clock to 33.3 MHz
-    //reg mineClock = 0;
-    reg mineClock;
+    reg mineClock = 0;
+    integer mineCounter = 0;
     always @(posedge uartClock) begin
-        mineClock = ~mineClock;
+      if(mineCounter == 3) begin
+         mineCounter = 0;
+         mineClock = ~mineClock;
+      end else begin
+         mineCounter = mineCounter + 1;
+      end
     end
-//     integer mineCounter = 0;
-//     always @(posedge clock) begin
-//       if(mineCounter == 2) begin
-//          mineCounter = 0;
-//          mineClock = ~mineClock;
-//       end else begin
-//          mineCounter = mineCounter + 1;
-//       end
-//     end
 
-    // Changing 33.3 MHz to 11.1 Mhz
+
     reg procClock = 0;
     integer procCounter = 0;
     always @(posedge mineClock) begin
@@ -154,6 +149,7 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
 
     //// Serial UART Core
     wire [31:0] byteCount;
+    //uart_core serial_core(uartClock, reset, rxd, txd, nonce, hashSuccess, blockHeader, rxce, byteCount);
     uart_core serial_core(uartClock, reset, rxd, txd, nonce, timeToSend, blockHeader, rxce, byteCount);
 
     ///// Seven Segment Display
