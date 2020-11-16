@@ -1,7 +1,8 @@
-module minerControl(blockHeader, satisfactoryHash, clock, nonce, hashSuccess, reset);
+module minerControl(blockHeader, satisfactoryHash, clock, nonce_in, current_nonce, hashSuccess, reset);
 	input clock, reset;
-	input [31:0] nonce;
+	input [31:0] nonce_in;
 	input [639:0] blockHeader;
+	output [31:0] current_nonce;
 	output ledControl, hashSuccess;
 	output [255:0] satisfactoryHash;
 
@@ -14,6 +15,10 @@ module minerControl(blockHeader, satisfactoryHash, clock, nonce, hashSuccess, re
 	wire [15:0] test1;
 	wire [1:0] outCount;
 	wire counterAtThree, firstBlock, secondBlock, finalHash, legitReset, wasReset, hashCheck;
+
+	wire [31:0] nonce;
+	nonce_counter count_nonce(nonce, nonce_in, counterAtThree, legitReset);
+	assign current_nonce[31:0] = nonce[31:0];
 
 	dffe_ref resetDFF(wasReset, reset, ~clock, 1'b1, 1'b0);
 	assign legitReset = (reset & ~wasReset);
@@ -129,5 +134,23 @@ module minerControl(blockHeader, satisfactoryHash, clock, nonce, hashSuccess, re
 
 	dffe_ref ledDFF(ledControl, hashSuccess, clock, hashSuccess, 1'b0);
 
+
+endmodule
+
+module nonce_counter(nonce, nonce_in, clock, reset);
+
+	output reg [31:0] nonce = 32'b0;
+
+	input [31:0] nonce_in;
+	input clock, reset;
+
+	always @(posedge clock or posedge reset) begin
+		if (reset) begin
+			nonce[31:0] <= nonce_in;
+		end
+		else begin
+			nonce <= nonce + 1;
+		end
+	end
 
 endmodule

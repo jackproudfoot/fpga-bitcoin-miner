@@ -1,14 +1,12 @@
 `timescale 1 ns / 100 ps
 module uart_tb();
-	reg clock = 1;
+	reg clock = 0;
 	reg [3:0] display_toggle =3'b0;
 	
-    reg reset, rxd;
+    reg reset = 0, rxd = 0;
     wire txd;
 
 	wire [7:0] ca, an;
-
-	reg [31:0] nonce = 32'h12345678;
 
 	// Module to test
 	uart_wrapper test_wrapper(clock, reset, rxd, txd, ca, an, display_toggle);
@@ -16,6 +14,11 @@ module uart_tb();
 	// Give inputs and runtime
 	initial begin
 		
+		#10
+		reset <= 1'b1;
+		#10
+		reset <= 1'b0;
+
 		#10000
 
 		// End testbench

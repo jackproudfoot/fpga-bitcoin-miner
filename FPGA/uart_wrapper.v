@@ -18,20 +18,23 @@ module uart_wrapper(fpga_clock, reset, rxd, txd, ca, an, display_toggle);
 
 
     wire [31:0] nonce_input;
-    assign nonce_input = 32'h12345678;
 
     wire [639:0] header_data;
     wire rxce;
 
     wire [31:0] byteCount;
 
-    uart_core serial_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data, rxce, byteCount);
+    assign nonce_input[31:0] = header_data[31:0];
+
+    wire transmit_data;
+    wire [31:0] current_nonce;
+
+    uart_core serial_core(clock, reset, rxd, txd, current_nonce, transmit_data, header_data, rxce, byteCount);
 
 
     wire [255:0] satisfactoryHash;
-    wire hashSuccess;
 
-    minerControl miner(header_data, satisfactoryHash, clock, header_data[31:0], hashSuccess, reset);
+    minerControl miner(header_data, satisfactoryHash, clock, header_data[31:0], current_nonce, transmit_data, reset);
 
 
     wire [31:0] display_data;
