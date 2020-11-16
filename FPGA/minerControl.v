@@ -3,7 +3,7 @@ module minerControl(blockHeader, satisfactoryHash, clock, nonce_in, current_nonc
 	input [31:0] nonce_in;
 	input [639:0] blockHeader;
 	output [31:0] current_nonce;
-	output ledControl, hashSuccess;
+	output hashSuccess;
 	output [255:0] satisfactoryHash;
 
 	wire [511:0] blockOne, blockTwo, blockNonce, blockFinal, blockToHash;
