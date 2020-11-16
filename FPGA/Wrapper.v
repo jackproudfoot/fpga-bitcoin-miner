@@ -109,9 +109,9 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle, hash_success_led,
                   .resetMine(resetMine),
       ///// Send
                   .timeToSend(timeToSend),
-                  .nonceIn(nonceIn)),
+                  .nonceIn(nonceIn),
                   
-                  .goodHashLed(goodHashLed);
+                  .goodHashLed(goodHashLed));
                   
     ///// Instruction Memory (ROM)
     ROM #(.MEMFILE("testMine.mem")) // Add your memory file here
