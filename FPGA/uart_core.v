@@ -70,8 +70,8 @@ module uart_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data
     reg shift_nonce = 0;
 
 
-    wire transmit;
-    edge_detector transmit_edge_detector(transmit_clock, transmit_data, transmit);
+    wire transmit = transmit_data;
+    //edge_detector transmit_edge_detector(transmit_clock, transmit_data, transmit);
 
 
     localparam NONCE_REG_INPUT_WIDTH = 32;
