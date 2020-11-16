@@ -19,6 +19,8 @@ set_property -dict { PACKAGE_PIN M17   IOSTANDARD LVCMOS33 } [get_ports { displa
 
 ## LEDS
 
+set_property -dict { PACKAGE_PIN H17   IOSTANDARD LVCMOS33 } [get_ports { hashLed }];
+
 ##USB-RS232 Interface
 
 set_property -dict { PACKAGE_PIN C4    IOSTANDARD LVCMOS33 } [get_ports { rxd }];

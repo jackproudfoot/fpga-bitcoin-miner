@@ -8,8 +8,10 @@ module uart_tb();
 
 	wire [7:0] ca, an;
 
+	wire hashLed;
+
 	// Module to test
-	uart_wrapper test_wrapper(clock, reset, rxd, txd, ca, an, display_toggle);
+	uart_wrapper test_wrapper(clock, reset, rxd, txd, ca, an, display_toggle, hashLed);
 
 	// Give inputs and runtime
 	initial begin

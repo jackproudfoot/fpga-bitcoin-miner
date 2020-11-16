@@ -1,11 +1,13 @@
 `timescale 1ns / 1ps
 
-module uart_wrapper(fpga_clock, reset, rxd, txd, ca, an, display_toggle);
+module uart_wrapper(fpga_clock, reset, rxd, txd, ca, an, display_toggle, hashLed);
     input fpga_clock, reset;
     input [3:0] display_toggle;
 
     input rxd;
     output txd;
+
+    output hashLed;
 
     output [7:0] ca, an;
 
@@ -44,6 +46,8 @@ module uart_wrapper(fpga_clock, reset, rxd, txd, ca, an, display_toggle);
 
     wire [31:0] successnonce;
     reg32 success(successnonce, current_nonce, clock, transmit_data, reset);
+
+    dffe_ref goodNonce(hashLed, transmit_data, clock, transmit_data, reset);
 
 
     wire [31:0] display_data;
