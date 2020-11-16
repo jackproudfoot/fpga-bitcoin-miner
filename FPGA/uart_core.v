@@ -61,7 +61,9 @@ module uart_core(clock, reset, rxd, txd, nonce_input, transmit_data, header_data
     //     .INPUT_WIDTH(HEADER_REG_INPUT_WIDTH),
     //     .DATA_WIDTH(HEADER_REG_DATA_WIDTH)
     // ) header_reg (header_data, rx, clock, rxce_edge, 1'b0, reset);
-   assign header_data = 640'h0100000081cd02ab7e569e8bcd9317e2fe99f2de44d49ab2b8851ba4a308000000000000e320b6c2fffc8d750423db8b1eb942ae710e951ed797f7affc8892b0f1fc122bc7f5d74df2b9441a42804695 //should be a1 instead of 80;
+   //assign header_data = 640'h0100000081cd02ab7e569e8bcd9317e2fe99f2de44d49ab2b8851ba4a308000000000000e320b6c2fffc8d750423db8b1eb942ae710e951ed797f7affc8892b0f1fc122bc7f5d74df2b9441a42804695; //should be a1 instead of 80;
+
+    uart_reg header_test_reg(header_data);
 
     always @(posedge rxce) begin
         byteCount <= byteCount + 1;
@@ -159,4 +161,15 @@ module edge_detector #(parameter EDGE = 0) (clock, signal, change);
         
         prev_signal <= signal;
     end
+endmodule
+
+
+module uart_reg(q);
+
+    output reg [639:0] q;
+
+    initial begin
+        q[639:0] <= 640'h0100000081cd02ab7e569e8bcd9317e2fe99f2de44d49ab2b8851ba4a308000000000000e320b6c2fffc8d750423db8b1eb942ae710e951ed797f7affc8892b0f1fc122bc7f5d74df2b9441a42804695;
+    end
+
 endmodule
