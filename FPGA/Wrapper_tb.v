@@ -14,7 +14,7 @@ module Wrapper_tb();
 		clk = 1;
 		reset = 0;
 		rxd = 0;
-		switch1 = 0;
+		switch1 = 1;
 		switch2 = 0;
 		switch3 = 0;
 		switch4 = 0;

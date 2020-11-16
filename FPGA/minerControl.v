@@ -1,5 +1,5 @@
-module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, hashSuccess, reset, difficulty);
-	input clock, reset;
+module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, hashSuccess, reset, resetButton, difficulty);
+	input clock, reset, resetButton;
 	input [31:0] nonce;
 	input [255:0] difficulty;
 	input [639:0] blockHeader;
@@ -123,11 +123,6 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 
 	assign satisfactoryHash = hashSuccess ? shaReturn : 256'b0;
 
-	dffe_ref ledDFF(ledControl, hashSuccess, clock, hashSuccess, reset);
-
-
-
-
-
+	dffe_ref ledDFF(ledControl, hashSuccess, clock, hashSuccess, resetButton);
 
 endmodule
