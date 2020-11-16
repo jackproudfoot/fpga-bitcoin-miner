@@ -84,7 +84,7 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle);
     wire [2:0] prev_rxce, prev_reset;
     saturating_counter rxcesatcount(rxce_sat, prev_rxce, rxce, uartClock);
     saturating_counter resetsatcount(reset_sat, prev_reset, reset, uartClock);
-    assign procReset = (prev_reset[2] | prev_reset[1] | prev_reset[0] | reset) | rxce_sat;
+    assign procReset = (prev_reset[2] | prev_reset[1] | prev_reset[0] | reset) | (prev_rxce[0] & rxce);
 
     ///// Main Processing Unit
     processor CPU(.clock(procClock), .reset(procReset), 
