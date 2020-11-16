@@ -1,6 +1,7 @@
 `timescale 1 ns / 100 ps
 module uart_tb();
-	reg clock = 1, display_toggle = 0;
+	reg clock = 1;
+	reg [3:0] display_toggle =3'b0;
 	
     reg reset, rxd;
     wire txd;
@@ -8,26 +9,14 @@ module uart_tb();
 	wire [7:0] ca, an;
 
 	reg [31:0] nonce = 32'h12345678;
-	reg transmit_data = 0;
 
 	// Module to test
-	uart_wrapper test_wrapper(clock, reset, rxd, txd, ca, an, transmit_data, display_toggle);
+	uart_wrapper test_wrapper(clock, reset, rxd, txd, ca, an, display_toggle);
 
 	// Give inputs and runtime
 	initial begin
-		#40
-		transmit_data <= 1;
-		#20
-		transmit_data <= 0;
-
-        #100000
-
-		#40
-		transmit_data <= 1;
-		#20
-		transmit_data <= 0;
-
-        #100000
+		
+		#10000
 
 		// End testbench
 		$finish;

@@ -1,4 +1,4 @@
-module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, hashSuccess, reset);
+module minerControl(blockHeader, satisfactoryHash, clock, nonce, hashSuccess, reset);
 	input clock, reset;
 	input [31:0] nonce;
 	input [639:0] blockHeader;

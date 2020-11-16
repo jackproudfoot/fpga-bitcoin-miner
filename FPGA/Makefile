@@ -1,4 +1,4 @@
-.DEFAULT_GOAL := processor
+.DEFAULT_GOAL := uart
 
 processor: module
 	@iverilog -o wrapper -c module.txt -s Wrapper_tb
