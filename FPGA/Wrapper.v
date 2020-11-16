@@ -56,16 +56,19 @@ module Wrapper(clock, reset, ca, an, txd, rxd, display_toggle, hashLed);
         uartClock = ~uartClock;
     end
 
-    reg mineClock = 0;
-    integer mineCounter = 0;
-    always @(posedge uartClock) begin
-      if(mineCounter == 3) begin
-         mineCounter = 0;
-         mineClock = ~mineClock;
-      end else begin
-         mineCounter = mineCounter + 1;
-      end
-    end
+    wire mineClock;
+    assign mineClock = uartClock;
+
+    // reg mineClock = 0;
+    // integer mineCounter = 0;
+    // always @(posedge uartClock) begin
+    //   if(mineCounter == 1) begin
+    //      mineCounter = 0;
+    //      mineClock = ~mineClock;
+    //   end else begin
+    //      mineCounter = mineCounter + 1;
+    //   end
+    // end
 
 
     reg procClock = 0;

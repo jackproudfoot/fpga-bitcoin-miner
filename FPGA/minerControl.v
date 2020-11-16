@@ -119,10 +119,12 @@ module minerControl(blockHeader, satisfactoryHash, clock, ledControl, nonce, has
 	
 	assign difficulty = {16'b0, 240'hffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff};
 	
-	assign hashCheck = ((difficulty > hashToCheck) & (finalHash) & (cycle_counter == 64));
+	//assign hashCheck = ((difficulty > hashToCheck) & (finalHash) & (cycle_counter == 64));
 	
-	assign hashSuccess = hashCheck;
-	//dffe_ref goodHash(hashSuccess, hashCheck | hashSuccess, ~clock, 1'b1, legitReset);
+	assign hashCheck = ((difficulty > hashToCheck) & (finalHash));
+
+	//assign hashSuccess = hashCheck;
+	dffe_ref goodHash(hashSuccess, hashCheck, ~clock, 1'b1, legitReset);
 
 	//assign satisfactoryHash = hashSuccess ? shaReturn : 256'b0;
 	assign satisfactoryHash = shaReturn;
